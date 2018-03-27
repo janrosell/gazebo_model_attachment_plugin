@@ -17,20 +17,21 @@ include_directories(${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
 add_service_files(
-        FILES
-        Attach.srv
+    FILES
+    Attach.srv
+    Detach.srv
 )
 
 generate_messages(
-        DEPENDENCIES
-        geometry_msgs
-        shape_msgs
+    DEPENDENCIES
+    geometry_msgs
+    shape_msgs
 )
 
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp gazebo_ros ee_manager message_runtime
+    INCLUDE_DIRS include
+    LIBRARIES ${PROJECT_NAME}
+    CATKIN_DEPENDS roscpp gazebo_ros ee_manager message_runtime
 )
 
 include_directories(
@@ -42,7 +43,7 @@ include_directories(
 
 add_library(${PROJECT_NAME}
     include/gazebo_ee_monitor_plugin/gazebo_ee_monitor_plugin.h
-        src/gazebo_ee_monitor_plugin.cpp
+    src/gazebo_ee_monitor_plugin.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
@@ -58,6 +59,12 @@ install(TARGETS
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+if(CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+    add_rostest(test/test_plugin.test)
+endif()
+
 
 set(ROSLINT_CPP_OPTS  "--filter=-whitespace/line_length,-readability/todo,-runtime/references,-build/c++11" )
 roslint_cpp()

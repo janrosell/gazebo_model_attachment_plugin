@@ -21,16 +21,27 @@
 #include <gazebo/common/Events.hh>
 #include <gazebo/transport/transport.hh>
 
-#include <ee_manager/EndEffector.h>
-#include "gazebo_ee_monitor_plugin/Attach.h"
-#include "gazebo_ee_monitor_plugin/AttachRequest.h"
-#include "gazebo_ee_monitor_plugin/AttachResponse.h"
+#include <gazebo_ee_monitor_plugin/Attach.h>
+#include <gazebo_ee_monitor_plugin/Detach.h>
 
 namespace gazebo
 {
 
+struct FixedJoint{
+    std::string model1;
+    physics::ModelPtr m1;
+    std::string link1;
+    physics::LinkPtr l1;
 
-class EEManager : public ModelPlugin
+    std::string model2;
+    physics::ModelPtr m2;
+    std::string link2;
+    physics::LinkPtr l2;
+
+    physics::JointPtr joint;
+};
+
+class EEManager : public WorldPlugin
 {
   public:
     EEManager();
@@ -38,54 +49,27 @@ class EEManager : public ModelPlugin
     virtual ~EEManager();
 
   protected:
-    void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
-
-    virtual void UpdateChild();
+    void Load(physics::WorldPtr world, sdf::ElementPtr sdf);
 
   private:
-    void activeEECallback(const ee_manager::EndEffector msg);
+    physics::WorldPtr world_;
 
-    /// \brief Internal representation of a fixed joint
-    struct fixedJoint{
-        std::string model1;
-        physics::ModelPtr m1;
-        std::string link1;
-        physics::LinkPtr l1;
-        std::string model2;
-        physics::ModelPtr m2;
-        std::string link2;
-        physics::LinkPtr l2;
-        physics::JointPtr joint;
-    };
+    bool attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req, gazebo_ee_monitor_plugin::Attach::Response& res);
+    bool detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req, gazebo_ee_monitor_plugin::Detach::Response& res);
 
     bool attach(std::string model1, std::string link1, std::string model2, std::string link2);
     bool detach(std::string model1, std::string link1, std::string model2, std::string link2);
-    bool getJoint(std::string model1, std::string link1, std::string model2, std::string link2, fixedJoint &joint);
+    bool getJoint(std::string model1, std::string link1, std::string model2, std::string link2, FixedJoint &joint);
 
-    physics::ModelPtr _model_local;
+    ros::NodeHandle nh_;
+    ros::ServiceServer attach_srv_;
+    ros::ServiceServer detach_srv_;
 
-    ros::NodeHandle *rosnode_;
-    ros::Subscriber sub_;
-
-    std::mutex lock_;
-    ee_manager::EndEffector active_ee_msg;
-
-
-    std::string topic_name_;
-    std::string robot_namespace_;
-    std::string robot_model_name_;
-    std::string ee_attachment_link_name_;
-    bool got_ee_msg_;
-
-    // Custom Callback Queue
     ros::CallbackQueue queue_;
     std::thread callback_queue_thread_;
     void queueThread();
 
-    // Pointer to the update event connection
-    event::ConnectionPtr update_connection_;
-
-    std::vector<fixedJoint> joints;
+    std::vector<FixedJoint> joints_;
 };
 
 }  // namespace gazebo
