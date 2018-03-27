@@ -247,8 +247,13 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
         }
         j.l2 = l2;
 
+        #if GAZEBO_MAJOR_VERSION >= 8
+        math::Pose l1wp = l1->WorldPose();
+        math::Pose l2rp = l2->RelativePose();
+        #else
         math::Pose l1wp = l1->GetWorldPose();
         math::Pose l2rp = l2->GetRelativePose();
+        #endif
 
         {
             const bool is_paused = world_->IsPaused();
