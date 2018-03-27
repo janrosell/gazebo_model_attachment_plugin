@@ -90,7 +90,7 @@
         </spherical_coordinates>
 
         <model name='box'>
-            <!--<static>true</static>-->
+            <static>true</static>
 
             <pose frame=''>0 0 0.5 0 0 0</pose>
 
@@ -142,10 +142,11 @@
                 </visual>
                 <self_collide>0</self_collide>
                 <kinematic>0</kinematic>
-                <gravity>1</gravity>
+                <gravity>0</gravity>
             </link>
 
             <link name='attachment_link'>
+                <static>true</static>
                 <pose>0.5 0 0 0 0 0</pose>
                 <inertial>
                     <mass>0.001</mass>
@@ -183,7 +184,7 @@
         </model>
 
         <model name='sphere'>
-            <!--<static>true</static>-->
+            <static>true</static>
 
             <pose frame=''>4 0 0.5 0 0 0</pose>
 
@@ -235,10 +236,11 @@
                 </visual>
                 <self_collide>0</self_collide>
                 <kinematic>0</kinematic>
-                <gravity>1</gravity>
+                <gravity>0</gravity>
             </link>
 
             <link name='attachment_link'>
+                <static>true</static>
                 <pose>-0.6 0 0 0 0 0</pose>
                 <inertial>
                     <mass>0.001</mass>

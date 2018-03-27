@@ -1,7 +1,6 @@
 // Copyright 2018 Boeing
-#ifndef EE_MANAGER_PLUGIN_H
-#define EE_MANAGER_PLUGIN_H
-
+#ifndef GAZEBO_EE_MONITOR_PLUGIN_GAZEBO_EE_MONITOR_PLUGIN_H
+#define GAZEBO_EE_MONITOR_PLUGIN_GAZEBO_EE_MONITOR_PLUGIN_H
 
 #include <mutex>
 #include <thread>
@@ -19,7 +18,6 @@
 #include <gazebo/transport/transport.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
-#include <gazebo/transport/transport.hh>
 
 #include <gazebo_ee_monitor_plugin/Attach.h>
 #include <gazebo_ee_monitor_plugin/Detach.h>
@@ -27,7 +25,8 @@
 namespace gazebo
 {
 
-struct FixedJoint{
+struct FixedJoint
+{
     std::string model1;
     physics::ModelPtr m1;
     std::string link1;
@@ -74,4 +73,4 @@ class EEManager : public WorldPlugin
 
 }  // namespace gazebo
 
-#endif  // EE_MANAGER_PLUGIN_H
+#endif  // GAZEBO_EE_MONITOR_PLUGIN_GAZEBO_EE_MONITOR_PLUGIN_H

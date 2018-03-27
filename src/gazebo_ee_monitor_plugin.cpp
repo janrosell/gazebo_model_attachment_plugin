@@ -2,6 +2,7 @@
 #include <gazebo/physics/World.hh>
 #include <gazebo_ee_monitor_plugin/gazebo_ee_monitor_plugin.h>
 #include <vector>
+#include <string>
 
 namespace gazebo
 {
@@ -161,7 +162,7 @@ void EEManager::queueThread()
 bool EEManager::attach(std::string model1, std::string link1, std::string model2, std::string link2)
 {
     FixedJoint j;
-    if (getJoint(model1, link1, model2, link2, j) == false)
+    if (!getJoint(model1, link1, model2, link2, j))
     {
         ROS_INFO_STREAM("Creating new joint.");
 
@@ -236,12 +237,6 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
                 ROS_ERROR_STREAM("CreateJoint returned nullptr");
                 return false;
             }
-
-            j.joint->Load(j.l1, j.l2, ignition::math::Pose3d());
-            j.joint->Attach(j.l1, j.l2);
-            j.joint->Init();
-
-            m2->SetParent(m1);
 
             world_->SetPaused(is_paused);
         }
