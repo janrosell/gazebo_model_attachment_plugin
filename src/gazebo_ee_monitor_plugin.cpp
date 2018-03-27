@@ -43,7 +43,12 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
                                                           << "' with model: '" << req.model_name_2 << "' using link: '"
                                                           << req.link_name_2 << "'");
 
-    if (world_->GetModel(req.model_name_1) == nullptr)
+    #if GAZEBO_MAJOR_VERSION >= 8
+    physics::ModelPtr m1 = world_->ModelByName(req.model_name_1);
+    #else
+    physics::ModelPtr m1 = world_->GetModel(req.model_name_1);
+    #endif
+    if (m1 == nullptr)
     {
         const std::string error_msg = "Could not find model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
@@ -52,7 +57,7 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
         return true;
     }
 
-    if (world_->GetModel(req.model_name_1)->GetLink(req.link_name_1) == nullptr)
+    if (m1->GetLink(req.link_name_1) == nullptr)
     {
         const std::string error_msg = "Could not find link " + req.link_name_1 + " on model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
@@ -61,8 +66,12 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
         return true;
     }
 
-    // Check the end effector model and link exists
-    if (world_->GetModel(req.model_name_2) == nullptr)
+    #if GAZEBO_MAJOR_VERSION >= 8
+    physics::ModelPtr m2 = world_->ModelByName(req.model_name_2);
+    #else
+    physics::ModelPtr m2 = world_->GetModel(req.model_name_2);
+    #endif
+    if (m2 == nullptr)
     {
         const std::string error_msg = "Could not find model " + req.model_name_2;
         ROS_ERROR_STREAM(error_msg);
@@ -71,7 +80,7 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
         return true;
     }
 
-    if (world_->GetModel(req.model_name_2)->GetLink(req.link_name_2) == NULL)
+    if (m2->GetLink(req.link_name_2) == NULL)
     {
         const std::string error_msg = "Could not find link " + req.link_name_2 + " on model " + req.model_name_2;
         ROS_ERROR_STREAM(error_msg);
@@ -100,7 +109,12 @@ bool EEManager::detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req,
                                                           << "' with model: '" << req.model_name_2 << "' using link: '"
                                                           << req.link_name_2 << "'");
 
-    if (world_->GetModel(req.model_name_1) == nullptr)
+    #if GAZEBO_MAJOR_VERSION >= 8
+    physics::ModelPtr m1 = world_->ModelByName(req.model_name_1);
+    #else
+    physics::ModelPtr m1 = world_->GetModel(req.model_name_1);
+    #endif
+    if (m1 == nullptr)
     {
         const std::string error_msg = "Could not find model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
@@ -109,7 +123,7 @@ bool EEManager::detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req,
         return true;
     }
 
-    if (world_->GetModel(req.model_name_1)->GetLink(req.link_name_1) == nullptr)
+    if (m1->GetLink(req.link_name_1) == nullptr)
     {
         const std::string error_msg = "Could not find link " + req.link_name_1 + " on model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
@@ -118,8 +132,12 @@ bool EEManager::detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req,
         return true;
     }
 
-    // Check the end effector model and link exists
-    if (world_->GetModel(req.model_name_2) == nullptr)
+    #if GAZEBO_MAJOR_VERSION >= 8
+    physics::ModelPtr m2 = world_->ModelByName(req.model_name_2);
+    #else
+    physics::ModelPtr m2 = world_->GetModel(req.model_name_2);
+    #endif
+    if (m2 == nullptr)
     {
         const std::string error_msg = "Could not find model " + req.model_name_2;
         ROS_ERROR_STREAM(error_msg);
@@ -128,7 +146,7 @@ bool EEManager::detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req,
         return true;
     }
 
-    if (world_->GetModel(req.model_name_2)->GetLink(req.link_name_2) == NULL)
+    if (m2->GetLink(req.link_name_2) == NULL)
     {
         const std::string error_msg = "Could not find link " + req.link_name_2 + " on model " + req.model_name_2;
         ROS_ERROR_STREAM(error_msg);
@@ -170,27 +188,34 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
         j.link1 = link1;
         j.model2 = model2;
         j.link2 = link2;
-        physics::BasePtr b1 = world_->GetModel(model1);
-        if (b1 == NULL)
+
+        #if GAZEBO_MAJOR_VERSION >= 8
+        j.m1 = world_->ModelByName(model1);
+        #else
+        j.m1 = world_->GetModel(model1);
+        #endif
+
+        if (j.m1 == nullptr)
         {
             ROS_ERROR_STREAM(model1 << " model was not found");
             return false;
         }
-        physics::BasePtr b2 = world_->GetModel(model2);
-        if (b2 == NULL)
+
+        #if GAZEBO_MAJOR_VERSION >= 8
+        j.m2 = world_->ModelByName(model2);
+        #else
+        j.m2 = world_->GetModel(model2);
+        #endif
+
+        if (j.m2 == nullptr)
         {
             ROS_ERROR_STREAM(model2 << " model was not found");
             return false;
         }
 
-        physics::ModelPtr m1(dynamic_cast<physics::Model*>(b1.get()));
-        j.m1 = m1;
-        physics::ModelPtr m2(dynamic_cast<physics::Model*>(b2.get()));
-        j.m2 = m2;
-
         ROS_DEBUG_STREAM("Getting link: '" << link1 << "' from model: '" << model1 << "'");
-        physics::LinkPtr l1 = m1->GetLink(link1);
-        if (l1 == NULL)
+        physics::LinkPtr l1 = j.m1->GetLink(link1);
+        if (l1 == nullptr)
         {
             ROS_ERROR_STREAM(link1 << " link was not found");
             return false;
@@ -206,8 +231,8 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
         j.l1 = l1;
 
         ROS_DEBUG_STREAM("Getting link: '" << link2 << "' from model: '" << model2 << "'");
-        physics::LinkPtr l2 = m2->GetLink(link2);
-        if (l2 == NULL)
+        physics::LinkPtr l2 = j.m2->GetLink(link2);
+        if (l2 == nullptr)
         {
             ROS_ERROR_STREAM(link2 << " link was not found");
             return false;
@@ -230,7 +255,7 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
             world_->SetPaused(true);
 
             j.m2->SetWorldPose(l1wp * l2rp.GetInverse());
-            j.joint = m1->CreateJoint("attachment", "fixed", j.l1, j.l2);
+            j.joint = j.m1->CreateJoint("attachment", "fixed", j.l1, j.l2);
 
             if (j.joint == nullptr)
             {
