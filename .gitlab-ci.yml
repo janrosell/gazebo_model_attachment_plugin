@@ -34,3 +34,19 @@ lint:
     - docker-executor
     - linux
     - docker
+
+test:
+  stage: test
+  image:
+      name: ${CI_IMAGE}
+      entrypoint: []
+  before_script:
+    - cd /root/ros
+    - source devel/setup.bash
+  script:
+    - catkin run_tests -j1 -i --no-status --no-notify
+    - catkin_test_results --all --verbose
+  tags:
+    - docker-executor
+    - linux
+    - docker

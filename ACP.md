@@ -1,10 +1,10 @@
 # Project Access Control Policy
 
-Project Name: gazebo_ee_monitor_plugin
+Project Name: gazebo_model_attachment_plugin
 
-Project URL: https://git.web.boeing.com/robotics/ros/gazebo_ee_monitor_plugin
+Project URL: https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin
 
-Project Owner(s): Jason Cochrane (jason.cochrane@boeing.com)
+Project Owner(s): Jason Cochrane (jason.cochrane@boeing.com), Phillip Haeusler (Phillip.Haeusler@Boeing.com)
 
 Date Completed: N/A
 
