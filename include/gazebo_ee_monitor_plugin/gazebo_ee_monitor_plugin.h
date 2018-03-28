@@ -25,21 +25,6 @@
 namespace gazebo
 {
 
-struct FixedJoint
-{
-    std::string model1;
-    physics::ModelPtr m1;
-    std::string link1;
-    physics::LinkPtr l1;
-
-    std::string model2;
-    physics::ModelPtr m2;
-    std::string link2;
-    physics::LinkPtr l2;
-
-    physics::JointPtr joint;
-};
-
 class EEManager : public WorldPlugin
 {
   public:
@@ -56,9 +41,8 @@ class EEManager : public WorldPlugin
     bool attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req, gazebo_ee_monitor_plugin::Attach::Response& res);
     bool detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req, gazebo_ee_monitor_plugin::Detach::Response& res);
 
-    bool attach(std::string model1, std::string link1, std::string model2, std::string link2);
-    bool detach(std::string model1, std::string link1, std::string model2, std::string link2);
-    bool getJoint(std::string model1, std::string link1, std::string model2, std::string link2, FixedJoint &joint);
+    void attach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2, physics::LinkPtr l1, physics::LinkPtr l2);
+    void detach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2);
 
     ros::NodeHandle nh_;
     ros::ServiceServer attach_srv_;
@@ -67,8 +51,6 @@ class EEManager : public WorldPlugin
     ros::CallbackQueue queue_;
     std::thread callback_queue_thread_;
     void queueThread();
-
-    std::vector<FixedJoint> joints_;
 };
 
 }  // namespace gazebo

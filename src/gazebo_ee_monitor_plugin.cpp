@@ -39,9 +39,7 @@ void EEManager::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
 bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
                                gazebo_ee_monitor_plugin::Attach::Response& res)
 {
-    ROS_INFO_STREAM("Received request to attach model: '" << req.model_name_1 << "' using link: '" << req.link_name_1
-                                                          << "' with model: '" << req.model_name_2 << "' using link: '"
-                                                          << req.link_name_2 << "'");
+    ROS_INFO_STREAM("Received request to attach model: '" << req.model_name_1 << "' to '" << req.model_name_2);
 
     #if GAZEBO_MAJOR_VERSION >= 8
     physics::ModelPtr m1 = world_->ModelByName(req.model_name_1);
@@ -57,7 +55,8 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
         return true;
     }
 
-    if (m1->GetLink(req.link_name_1) == nullptr)
+    physics::LinkPtr l1 = m1->GetLink(req.link_name_1);
+    if (l1 == nullptr)
     {
         const std::string error_msg = "Could not find link " + req.link_name_1 + " on model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
@@ -80,7 +79,8 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
         return true;
     }
 
-    if (m2->GetLink(req.link_name_2) == NULL)
+    physics::LinkPtr l2 = m2->GetLink(req.link_name_2);
+    if (l2 == nullptr)
     {
         const std::string error_msg = "Could not find link " + req.link_name_2 + " on model " + req.model_name_2;
         ROS_ERROR_STREAM(error_msg);
@@ -89,9 +89,13 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
         return true;
     }
 
-    if (!attach(req.model_name_1, req.link_name_1, req.model_name_2, req.link_name_2))
+    try
     {
-        const std::string error_msg = "Failed to attach";
+        attach(req.joint_name, m1, m2, l1, l2);
+    }
+    catch (const std::exception& e)
+    {
+        const std::string error_msg = "Failed to detach: " + std::string(e.what());
         ROS_ERROR_STREAM(error_msg);
         res.message = error_msg;
         res.success = false;
@@ -105,9 +109,7 @@ bool EEManager::attachCallback(gazebo_ee_monitor_plugin::Attach::Request& req,
 bool EEManager::detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req,
                                gazebo_ee_monitor_plugin::Detach::Response& res)
 {
-    ROS_INFO_STREAM("Received request to detach model: '" << req.model_name_1 << "' using link: '" << req.link_name_1
-                                                          << "' with model: '" << req.model_name_2 << "' using link: '"
-                                                          << req.link_name_2 << "'");
+    ROS_INFO_STREAM("Received request to detach model: '" << req.model_name_1 << "' from '" << req.model_name_2);
 
     #if GAZEBO_MAJOR_VERSION >= 8
     physics::ModelPtr m1 = world_->ModelByName(req.model_name_1);
@@ -117,15 +119,6 @@ bool EEManager::detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req,
     if (m1 == nullptr)
     {
         const std::string error_msg = "Could not find model " + req.model_name_1;
-        ROS_ERROR_STREAM(error_msg);
-        res.message = error_msg;
-        res.success = false;
-        return true;
-    }
-
-    if (m1->GetLink(req.link_name_1) == nullptr)
-    {
-        const std::string error_msg = "Could not find link " + req.link_name_1 + " on model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
         res.message = error_msg;
         res.success = false;
@@ -146,18 +139,13 @@ bool EEManager::detachCallback(gazebo_ee_monitor_plugin::Detach::Request& req,
         return true;
     }
 
-    if (m2->GetLink(req.link_name_2) == NULL)
+    try
     {
-        const std::string error_msg = "Could not find link " + req.link_name_2 + " on model " + req.model_name_2;
-        ROS_ERROR_STREAM(error_msg);
-        res.message = error_msg;
-        res.success = false;
-        return true;
+        detach(req.joint_name, m1, m2);
     }
-
-    if (!detach(req.model_name_1, req.link_name_1, req.model_name_2, req.link_name_2))
+    catch (const std::exception& e)
     {
-        const std::string error_msg = "Failed to detach";
+        const std::string error_msg = "Failed to detach: " + std::string(e.what());
         ROS_ERROR_STREAM(error_msg);
         res.message = error_msg;
         res.success = false;
@@ -177,150 +165,67 @@ void EEManager::queueThread()
     }
 }
 
-bool EEManager::attach(std::string model1, std::string link1, std::string model2, std::string link2)
+void EEManager::attach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2, physics::LinkPtr l1, physics::LinkPtr l2)
 {
-    FixedJoint j;
-    if (!getJoint(model1, link1, model2, link2, j))
-    {
-        ROS_INFO_STREAM("Creating new joint.");
+    if (m1 == nullptr)
+        throw std::runtime_error("Model 1 is null");
 
-        j.model1 = model1;
-        j.link1 = link1;
-        j.model2 = model2;
-        j.link2 = link2;
+    if (m2 == nullptr)
+        throw std::runtime_error("Model 2 is null");
 
-        #if GAZEBO_MAJOR_VERSION >= 8
-        j.m1 = world_->ModelByName(model1);
-        #else
-        j.m1 = world_->GetModel(model1);
-        #endif
+    if (l1 == nullptr)
+        throw std::runtime_error("Link 1 is null");
 
-        if (j.m1 == nullptr)
-        {
-            ROS_ERROR_STREAM(model1 << " model was not found");
-            return false;
-        }
+    if (l2 == nullptr)
+        throw std::runtime_error("Link 2 is null");
 
-        #if GAZEBO_MAJOR_VERSION >= 8
-        j.m2 = world_->ModelByName(model2);
-        #else
-        j.m2 = world_->GetModel(model2);
-        #endif
+    #if GAZEBO_MAJOR_VERSION >= 8
+    ignition::math::Pose3d l1wp = l1->WorldPose();
+    ignition::math::Pose3d l2rp = l2->RelativePose();
+    #else
+    math::Pose l1wp = l1->GetWorldPose();
+    math::Pose l2rp = l2->GetRelativePose();
+    #endif
 
-        if (j.m2 == nullptr)
-        {
-            ROS_ERROR_STREAM(model2 << " model was not found");
-            return false;
-        }
+    const bool is_paused = world_->IsPaused();
+    world_->SetPaused(true);
 
-        ROS_DEBUG_STREAM("Getting link: '" << link1 << "' from model: '" << model1 << "'");
-        physics::LinkPtr l1 = j.m1->GetLink(link1);
-        if (l1 == nullptr)
-        {
-            ROS_ERROR_STREAM(link1 << " link was not found");
-            return false;
-        }
-        if (l1->GetInertial() == NULL)
-        {
-            ROS_ERROR_STREAM("link1 inertia is NULL!");
-        }
-        else
-        {
-            double mass;
-            #if GAZEBO_MAJOR_VERSION >= 8
-            mass = l1->GetInertial()->Mass();
-            #else
-            mass = l1->GetInertial()->GetMass();
-            #endif
-            ROS_DEBUG_STREAM("link1 inertia is not NULL, for example, mass is: " << mass);
-        }
-        j.l1 = l1;
+    #if GAZEBO_MAJOR_VERSION >= 8
+    m2->SetWorldPose(l1wp * l2rp.Inverse());
+    #else
+    m2->SetWorldPose(l1wp * l2rp.GetInverse());
+    #endif
 
-        ROS_DEBUG_STREAM("Getting link: '" << link2 << "' from model: '" << model2 << "'");
-        physics::LinkPtr l2 = j.m2->GetLink(link2);
-        if (l2 == nullptr)
-        {
-            ROS_ERROR_STREAM(link2 << " link was not found");
-            return false;
-        }
-        if (l2->GetInertial() == NULL)
-        {
-            ROS_ERROR_STREAM("link2 inertia is NULL!");
-        }
-        else
-        {
-            double mass;
-            #if GAZEBO_MAJOR_VERSION >= 8
-            mass = l2->GetInertial()->Mass();
-            #else
-            mass = l2->GetInertial()->GetMass();
-            #endif
-            ROS_DEBUG_STREAM("link2 inertia is not NULL, for example, mass is: " << mass);
-        }
-        j.l2 = l2;
+    physics::JointPtr joint = m1->CreateJoint(joint_name, "fixed", l1, l2);
 
-        #if GAZEBO_MAJOR_VERSION >= 8
-        ignition::math::Pose3d l1wp = l1->WorldPose();
-        ignition::math::Pose3d l2rp = l2->RelativePose();
-        #else
-        math::Pose l1wp = l1->GetWorldPose();
-        math::Pose l2rp = l2->GetRelativePose();
-        #endif
+    if (joint == nullptr)
+        throw std::runtime_error("CreateJoint returned nullptr");
 
-        {
-            const bool is_paused = world_->IsPaused();
-            world_->SetPaused(true);
+    m1->AddChild(m2);
 
-            #if GAZEBO_MAJOR_VERSION >= 8
-            j.m2->SetWorldPose(l1wp * l2rp.Inverse());
-            #else
-            j.m2->SetWorldPose(l1wp * l2rp.GetInverse());
-            #endif
-
-            j.joint = j.m1->CreateJoint("attachment", "fixed", j.l1, j.l2);
-
-            if (j.joint == nullptr)
-            {
-                ROS_ERROR_STREAM("CreateJoint returned nullptr");
-                return false;
-            }
-
-            world_->SetPaused(is_paused);
-        }
-
-        joints_.push_back(j);  // local copy
-    }
-
-    return true;
+    world_->SetPaused(is_paused);
 }
 
-bool EEManager::detach(std::string model1, std::string link1, std::string model2, std::string link2)
+void EEManager::detach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2)
 {
-    // search for the instance of joint and do detach
-    FixedJoint j;
-    if (getJoint(model1, link1, model2, link2, j))
-    {
-        return j.m1->RemoveJoint(j.joint->GetName());
-    }
+    if (m1 == nullptr)
+        throw std::runtime_error("Model 1 is null");
 
-    return false;
-}
+    if (m2 == nullptr)
+        throw std::runtime_error("Model 2 is null");
 
-bool EEManager::getJoint(std::string model1, std::string link1, std::string model2, std::string link2,
-                         FixedJoint& joint)
-{
-    FixedJoint j;
-    for (std::vector<FixedJoint>::iterator it = joints_.begin(); it != joints_.end(); ++it)
-    {
-        j = *it;
-        if ((j.model1.compare(model1) == 0) && (j.model2.compare(model2) == 0) && (j.link1.compare(link1) == 0) &&
-            (j.link2.compare(link2) == 0))
-        {
-            joint = j;
-            return true;
-        }
-    }
-    return false;
+    physics::JointPtr joint = m1->GetJoint(joint_name);
+    if (joint == nullptr)
+        throw std::runtime_error("No joint on model " + m1->GetName() + " by name " + joint_name);
+
+    bool success = m1->RemoveJoint(joint_name);
+
+    if (!success)
+        throw std::runtime_error("Unable to remove joint from model");
+
+    m1->RemoveChild(m2);
+
+    return;
 }
 
 GZ_REGISTER_WORLD_PLUGIN(EEManager)

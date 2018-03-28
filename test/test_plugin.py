@@ -6,6 +6,7 @@ import rospy
 import rostest
 from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import SetModelState, SetModelStateRequest, SetModelStateResponse
+from gazebo_msgs.srv import GetModelState, GetModelStateRequest, GetModelStateResponse
 from geometry_msgs.msg import Pose, Twist, Point, Quaternion, Vector3
 
 from gazebo_ee_monitor_plugin.srv import Attach, AttachRequest, AttachResponse
@@ -27,12 +28,18 @@ class TestWorldModelPlugin(unittest.TestCase):
             name='/gazebo/set_model_state',
             service_class=SetModelState
         )
+        cls.__get_model_state_srv = rospy.ServiceProxy(
+            name='/gazebo/get_model_state',
+            service_class=GetModelState
+        )
         cls.__attach_srv.wait_for_service(timeout=30)
         cls.__detach_srv.wait_for_service(timeout=30)
+        cls.__get_model_state_srv.wait_for_service(timeout=30)
 
     def test_attach(self):
         response = self.__attach_srv.call(
             AttachRequest(
+                joint_name='test_attachment',
                 model_name_1='box',
                 link_name_1='attachment_link',
                 model_name_2='sphere',
@@ -40,6 +47,7 @@ class TestWorldModelPlugin(unittest.TestCase):
             )
         )
         assert isinstance(response, AttachResponse)
+        self.assertTrue(response.success)
 
         response = self.__set_model_state_srv.call(
             SetModelStateRequest(
@@ -59,15 +67,35 @@ class TestWorldModelPlugin(unittest.TestCase):
         )
         assert isinstance(response, SetModelStateResponse)
 
+        box_model_state = self.__get_model_state_srv.call(
+            GetModelStateRequest(
+                model_name='box'
+            )
+        )
+        assert isinstance(box_model_state, GetModelStateResponse)
+        self.assertTrue(box_model_state.success)
+
+        sphere_model_state = self.__get_model_state_srv.call(
+            GetModelStateRequest(
+                model_name='sphere'
+            )
+        )
+        assert isinstance(sphere_model_state, GetModelStateResponse)
+        self.assertTrue(sphere_model_state.success)
+
+        self.assertEqual(sphere_model_state.pose.position.y, box_model_state.pose.position.y)
+        self.assertEqual(sphere_model_state.pose.position.z, box_model_state.pose.position.z)
+        self.assertEqual(sphere_model_state.twist, box_model_state.twist)
+
         response = self.__detach_srv.call(
             DetachRequest(
+                joint_name='test_attachment',
                 model_name_1='box',
-                link_name_1='attachment_link',
-                model_name_2='sphere',
-                link_name_2='attachment_link'
+                model_name_2='sphere'
             )
         )
         assert isinstance(response, DetachResponse)
+        self.assertTrue(response.success)
 
 
 if __name__ == '__main__':
