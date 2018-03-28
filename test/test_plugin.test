@@ -9,7 +9,7 @@
 
     <!-- Gazebo Arguments -->
     <arg name="gui" default="false"/>
-    <arg name="world_name" default="$(find gazebo_ee_monitor_plugin)/test/test.world"/>
+    <arg name="world_name" default="$(find gazebo_model_attachment_plugin)/test/test.world"/>
     <arg name="extra_gazebo_args" default=""/>
     <arg name="debug" default="false"/>
     <arg name="physics" default="ode"/>
@@ -36,5 +36,5 @@
         </node>
     </group>
 
-    <test test-name="test_plugin" pkg="gazebo_ee_monitor_plugin" type="test_plugin.py" time-limit="3000"/>
+    <test test-name="test_plugin" pkg="gazebo_model_attachment_plugin" type="test_plugin.py" time-limit="3000"/>
 </launch>

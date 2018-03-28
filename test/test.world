@@ -1,7 +1,7 @@
 <sdf version='1.6'>
     <world name='default'>
 
-        <plugin name="EEManager" filename="libgazebo_ee_monitor_plugin.so"></plugin>
+        <plugin name="model_attachment_plugin" filename="libgazebo_model_attachment_plugin.so"></plugin>
 
         <light name='sun' type='directional'>
             <cast_shadows>1</cast_shadows>

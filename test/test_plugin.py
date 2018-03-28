@@ -9,8 +9,8 @@ from gazebo_msgs.srv import SetModelState, SetModelStateRequest, SetModelStateRe
 from gazebo_msgs.srv import GetModelState, GetModelStateRequest, GetModelStateResponse
 from geometry_msgs.msg import Pose, Twist, Point, Quaternion, Vector3
 
-from gazebo_ee_monitor_plugin.srv import Attach, AttachRequest, AttachResponse
-from gazebo_ee_monitor_plugin.srv import Detach, DetachRequest, DetachResponse
+from gazebo_model_attachment_plugin.srv import Attach, AttachRequest, AttachResponse
+from gazebo_model_attachment_plugin.srv import Detach, DetachRequest, DetachResponse
 
 
 class TestWorldModelPlugin(unittest.TestCase):

@@ -1,4 +1,4 @@
-# gazebo_ee_monitor_plugin
+# gazebo_model_attachment_plugin
 
 ## Installation
 
@@ -9,7 +9,7 @@ Look at the included dockerfile.
 ### Manually
 
 ```bash
-git clone https://git.web.boeing.com/robotics/ros/gazebo_ee_monitor_plugin
+git clone https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin
 ```
 
 ### With a .rosinstall file
@@ -17,7 +17,7 @@ git clone https://git.web.boeing.com/robotics/ros/gazebo_ee_monitor_plugin
 Add the following to a .rosinstall file:
 
 ```yaml
-- git: {local-name: gazebo_ee_monitor_plugin, uri: 'https://git.web.boeing.com/robotics/ros/gazebo_ee_monitor_plugin'}
+- git: {local-name: gazebo_model_attachment_plugin, uri: 'https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin'}
 ```
 
 ```bash
