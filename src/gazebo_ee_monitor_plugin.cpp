@@ -226,7 +226,13 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
         }
         else
         {
-            ROS_DEBUG_STREAM("link1 inertia is not NULL, for example, mass is: " << l1->GetInertial()->GetMass());
+            double mass;
+            #if GAZEBO_MAJOR_VERSION >= 8
+            mass = l1->GetInertial()->Mass();
+            #else
+            mass = l2->GetInertial()->GetMass();
+            #endif
+            ROS_DEBUG_STREAM("link1 inertia is not NULL, for example, mass is: " << mass);
         }
         j.l1 = l1;
 
@@ -243,13 +249,19 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
         }
         else
         {
-            ROS_DEBUG_STREAM("link2 inertia is not NULL, for example, mass is: " << l2->GetInertial()->GetMass());
+            double mass;
+            #if GAZEBO_MAJOR_VERSION >= 8
+            mass = l2->GetInertial()->Mass();
+            #else
+            mass = l2->GetInertial()->GetMass();
+            #endif
+            ROS_DEBUG_STREAM("link2 inertia is not NULL, for example, mass is: " << mass);
         }
         j.l2 = l2;
 
         #if GAZEBO_MAJOR_VERSION >= 8
-        math::Pose l1wp = l1->WorldPose();
-        math::Pose l2rp = l2->RelativePose();
+        ignition::math::Pose3d l1wp = l1->WorldPose();
+        ignition::math::Pose3d l2rp = l2->RelativePose();
         #else
         math::Pose l1wp = l1->GetWorldPose();
         math::Pose l2rp = l2->GetRelativePose();
@@ -259,7 +271,12 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
             const bool is_paused = world_->IsPaused();
             world_->SetPaused(true);
 
+            #if GAZEBO_MAJOR_VERSION >= 8
+            j.m2->SetWorldPose(l1wp * l2rp.Inverse());
+            #else
             j.m2->SetWorldPose(l1wp * l2rp.GetInverse());
+            #endif
+
             j.joint = j.m1->CreateJoint("attachment", "fixed", j.l1, j.l2);
 
             if (j.joint == nullptr)
