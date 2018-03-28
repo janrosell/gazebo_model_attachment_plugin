@@ -230,7 +230,7 @@ bool EEManager::attach(std::string model1, std::string link1, std::string model2
             #if GAZEBO_MAJOR_VERSION >= 8
             mass = l1->GetInertial()->Mass();
             #else
-            mass = l2->GetInertial()->GetMass();
+            mass = l1->GetInertial()->GetMass();
             #endif
             ROS_DEBUG_STREAM("link1 inertia is not NULL, for example, mass is: " << mass);
         }
