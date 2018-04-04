@@ -36,5 +36,5 @@
         </node>
     </group>
 
-    <test test-name="test_plugin" pkg="gazebo_model_attachment_plugin" type="test_plugin.py" time-limit="3000"/>
+    <test test-name="test_plugin" pkg="gazebo_model_attachment_plugin" type="test_plugin.py"/>
 </launch>
