@@ -48,7 +48,7 @@ cppcheck:
   variables:
       GIT_STRATEGY: none
   before_script:
-    - cd /root/ros
+    - cd /root/ros/src/${CI_PROJECT_NAME}
   script:
     - cppcheck --enable=all --suppress=missingIncludeSystem src -I include --quiet &> errors.txt
     - cat errors.txt
