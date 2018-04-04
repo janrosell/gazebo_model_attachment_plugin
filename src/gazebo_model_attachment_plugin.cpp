@@ -224,7 +224,7 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
     if (!success)
         throw std::runtime_error("Unable to remove joint from model");
 
-    m1->RemoveChild(m2);
+    m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2));
 
     return;
 }

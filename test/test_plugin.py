@@ -87,6 +87,9 @@ class TestWorldModelPlugin(unittest.TestCase):
         self.assertEqual(sphere_model_state.pose.position.z, box_model_state.pose.position.z)
         self.assertEqual(sphere_model_state.twist, box_model_state.twist)
 
+        import pdb
+        pdb.set_trace()
+
         response = self.__detach_srv.call(
             DetachRequest(
                 joint_name='test_attachment',
@@ -96,6 +99,9 @@ class TestWorldModelPlugin(unittest.TestCase):
         )
         assert isinstance(response, DetachResponse)
         self.assertTrue(response.success)
+
+        import pdb
+        pdb.set_trace()
 
 
 if __name__ == '__main__':

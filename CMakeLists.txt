@@ -5,30 +5,26 @@ add_definitions(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
     gazebo_ros
-    roscpp
-    roslint
     message_generation
+    roscpp
 )
 
 find_package(gazebo REQUIRED)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
-include_directories(${GAZEBO_INCLUDE_DIRS})
-link_directories(${GAZEBO_LIBRARY_DIRS})
 
-add_service_files(
-    FILES
+add_service_files(FILES
     Attach.srv
     Detach.srv
 )
 
-generate_messages(
-    DEPENDENCIES
-)
+generate_messages()
 
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS roscpp gazebo_ros message_runtime
+    CATKIN_DEPENDS
+        gazebo_ros
+        message_runtime
+        roscpp
 )
 
 include_directories(
@@ -39,9 +35,11 @@ include_directories(
 ) 
 
 add_library(${PROJECT_NAME}
-    include/gazebo_model_attachment_plugin/gazebo_model_attachment_plugin.h
-    src/gazebo_model_attachment_plugin.cpp
+    include/${PROJECT_NAME}/${PROJECT_NAME}.h
+    src/${PROJECT_NAME}.cpp
 )
+
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
@@ -61,7 +59,3 @@ if(CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
     add_rostest(test/test_plugin.test)
 endif()
-
-
-set(ROSLINT_CPP_OPTS  "--filter=-whitespace/line_length,-readability/todo,-runtime/references,-build/c++11" )
-roslint_cpp()
