@@ -50,7 +50,7 @@ cppcheck:
   before_script:
     - cd /root/ros/src/${CI_PROJECT_NAME}
   script:
-    - cppcheck --enable=all --suppress=missingIncludeSystem src -I include --quiet &> errors.txt
+    - cppcheck --enable=all --suppress=missingIncludeSystem --inline-suppr src -I include --quiet &> errors.txt
     - cat errors.txt
     - if [ $(wc -l < errors.txt) -gt 0 ]; then exit 1; fi
   tags:

@@ -18,6 +18,7 @@ ModelAttachmentPlugin::~ModelAttachmentPlugin()
     callback_queue_thread_.join();
 }
 
+// cppcheck-suppress unusedFunction
 void ModelAttachmentPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
 {
     ROS_INFO("Initialising CustomWorldPlugin Plugin");
