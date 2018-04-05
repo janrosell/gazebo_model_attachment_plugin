@@ -5,13 +5,13 @@ stages:
   - test
 
 variables:
-    CI_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}
+  CI_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}
 
 clang_format:
   stage: lint
   image: registry.web.boeing.com/robotics/continuous_integration/clang_format
   script:
-    - check_clang_format.sh
+    - run_clang_format.sh
   tags:
     - docker-executor
     - linux
@@ -21,7 +21,7 @@ build:
   stage: build
   image: docker:latest
   script:
-    - wget --no-check-certificate https://git.web.boeing.com/robotics/continuous_integration/raw/master/Dockerfile
+    - wget --no-check-certificate -O - https://git.web.boeing.com/robotics/continuous_integration/raw/master/build_dockerfile.sh | sh
     - docker build -t ${CI_IMAGE} --build-arg PROJECT_NAME=${CI_PROJECT_NAME} --build-arg http_proxy=http://172.17.0.1:3128 --build-arg https_proxy=http://172.17.0.1:3128 .
   tags:
     - docker-executor
@@ -36,7 +36,7 @@ catkin_lint:
   before_script:
     - cd /root/ros
   script:
-    - catkin_lint --strict -W2
+    - curl -s https://git.web.boeing.com/robotics/continuous_integration/raw/master/run_catkin_lint.sh | bash
   tags:
     - docker-executor
     - linux
@@ -48,11 +48,9 @@ cppcheck:
   variables:
       GIT_STRATEGY: none
   before_script:
-    - cd /root/ros/src/${CI_PROJECT_NAME}
+    - cd /root/ros
   script:
-    - cppcheck --enable=all --suppress=missingIncludeSystem --inline-suppr src -I include --quiet &> errors.txt
-    - cat errors.txt
-    - if [ $(wc -l < errors.txt) -gt 0 ]; then exit 1; fi
+    - curl -s https://git.web.boeing.com/robotics/continuous_integration/raw/master/run_cppcheck.sh | bash
   tags:
     - docker-executor
     - linux
