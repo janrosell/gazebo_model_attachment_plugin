@@ -1,6 +1,6 @@
 // Copyright 2018 Boeing
-#ifndef GAZEBO_MODEL_ATTACHMENT_PLUGIN_GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
-#define GAZEBO_MODEL_ATTACHMENT_PLUGIN_GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
+#ifndef GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
+#define GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
 
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
@@ -58,4 +58,4 @@ class ModelAttachmentPlugin : public WorldPlugin
 
 }  // namespace gazebo
 
-#endif  // GAZEBO_MODEL_ATTACHMENT_PLUGIN_GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
+#endif  // GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
