@@ -225,7 +225,18 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
     if (!success)
         throw std::runtime_error("Unable to remove joint from model");
 
-    m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2));
+#if GAZEBO_MAJOR_VERSION >= 8
+    m2->SetParent(m1->GetWorld()->ModelByName("default"));
+#else
+    m2->SetParent(m1->GetWorld()->GetModel("default"));
+#endif
+
+    // We need to flush the children vector of the parent
+    // TODO: Calling m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2)); will also destroy the child
+    // TODO: through a call to Fini()
+    // TODO: We need a way to remove the child from model->children without calling Fini()
+    // For now assume our attachment point has no other relevant children
+    m1->RemoveChildren();
 
     return;
 }
