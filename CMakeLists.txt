@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
     gazebo_msgs
     gazebo_ros
     message_generation
+    message_runtime
     roscpp
     rospy
 )
@@ -28,6 +29,7 @@ catkin_package(
     gazebo_msgs
     gazebo_ros
     message_generation
+    message_runtime
     roscpp
     rospy
 )
