@@ -13,6 +13,13 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(gazebo REQUIRED)
 
+add_service_files(FILES
+    Attach.srv
+    Detach.srv
+)
+
+generate_messages()
+
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
