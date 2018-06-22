@@ -1,42 +1,48 @@
-# gazebo_model_attachment_plugin
+# Gazebo Model Attachement Plugin
+[![pipeline status](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/badges/master/pipeline.svg)](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/commits/master)
+[![coverage](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/badges/master/coverage.svg)](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/commits/master)
+
+| **Role**    | **Maintainer Name** | **Maintainer email**          |
+| ------- | --------------- | ------------------------- |
+| Primary | Jason Cochrane  | Jason.Cochrane@boeing.com |
+| Backup  | Christopher McDermott  | christopher.mcdermott2@boeing.com
+
+## Overview
+
+-ToDo
+
+## Motivation
+
+-ToDo
+
+## API
+
+#### Subscribed topics
+
+N/A
+
+#### Published topics
+
+N/A
+
+#### Parameters
+
+N/A
+
+#### Subscribed topics
+
+N/A
+
+#### Published topics
+
+N/A
 
 ## Installation
 
-Look at the included dockerfile.
+Add the package to your .rosinstall file and then add the following line of code to your .world file.
 
-## Include in your project
-
-### Manually
-
-```bash
-git clone https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin
-```
-
-### With a .rosinstall file
-
-Add the following to a .rosinstall file:
-
-```yaml
-- git: {local-name: gazebo_model_attachment_plugin, uri: 'https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin'}
-```
-
-```bash
-wstool update --target-workspace=/path/to/workspace/src/with/.rosinstall/file
-```
-
-For more information about using rosinstall and wstool see the [ROS Wiki - wstool](http://wiki.ros.org/wstool)
-
-## Get dependencies
-
-Once the source is downloaded to your workspace run:
-
-```bash
-rosdep update
-rosdep install --from-paths /path/to/your/workspace --ignore-src
-```
-
-If using as part of a Dockerfile that command will run as root and so must be modified to
-
-```bash
-rosdep install --from-paths /path/to/your/workspace --ignore-src --as-root apt:false -y
+```xml
+<gazebo>
+    <plugin name="gazebo_model_attachment_plugin" filename="libgazebo_model_attachment_plugin.so"></plugin>
+</gazebo>
 ```
