@@ -4,11 +4,11 @@
 
 ## Overview
 
--ToDo
+This plugin exposes an attachment and also detachment services that can be called with ROS service call.
 
 ## Motivation
 
--ToDo
+Implements the ability for realtime attach/detach of models in Gazebo. This is essential for processes such as EE change or consumable swap.
 
 ## API
 
