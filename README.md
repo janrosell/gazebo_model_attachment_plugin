@@ -12,26 +12,27 @@ Implements the ability for realtime attach/detach of models in Gazebo. This is e
 
 ## API
 
-#### Subscribed topics
+#### Advertised Services
 
-N/A
+##### Attach - /gazebo/attach
+```python
+    AttachRequest (
+        joint_name='joint_name',
+        model_name_1='model_1',
+        link_name_1='attachment_link',
+        model_name_2='model_2',
+        link_name_2='attachment_link'
+    )
+```
 
-#### Published topics
-
-N/A
-
-#### Parameters
-
-N/A
-
-#### Subscribed topics
-
-N/A
-
-#### Published topics
-
-N/A
-
+##### Detach - /gazebo/detach
+```python 
+    DetachRequest (
+        joint_name='joint_name',
+        model_name_1='model_1',
+        model_name_2='model_2'
+    )
+```
 ## Installation
 
 Add the package to your .rosinstall file and then add the following line of code to your .world file.
