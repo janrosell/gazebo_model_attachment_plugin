@@ -233,11 +233,17 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
 #endif
 
     // We need to flush the children vector of the parent
-    // TODO: Calling m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2)); will also destroy the child
-    // TODO: through a call to Fini()
-    // TODO: We need a way to remove the child from model->children without calling Fini()
-    // For now assume our attachment point has no other relevant children
+    // Calling m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2)); will also destroy the child
+    // Through a call to Fini() & we need a way to remove the child from model->children without calling Fini()
+    physics::Model_V temp_child_objects = m1->NestedModels();
+
     m1->RemoveChildren();
+
+    for (const auto& obj : temp_child_objects)
+    {
+        if (obj != m2)
+            m1->AddChild(obj);
+    }
 
     return;
 }
