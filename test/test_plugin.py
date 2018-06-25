@@ -13,7 +13,7 @@ from gazebo_model_attachment_plugin.srv import Attach, AttachRequest, AttachResp
 from gazebo_model_attachment_plugin.srv import Detach, DetachRequest, DetachResponse
 
 
-class TestWorldModelPlugin(unittest.TestCase):
+class TestModelAttachmentPlugin(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.__attach_srv = rospy.ServiceProxy(
@@ -164,4 +164,4 @@ if __name__ == '__main__':
     rospy.init_node('test_plugin')
 
     rostest.rosrun('world_model_monitor',
-                   'test_world_model_plugin', TestWorldModelPlugin)
+                   'test_model_attachment_plugin', TestModelAttachmentPlugin)
