@@ -2,11 +2,6 @@
 [![pipeline status](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/badges/master/pipeline.svg)](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/commits/master)
 [![coverage](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/badges/master/coverage.svg)](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/commits/master)
 
-| **Role**    | **Maintainer Name** | **Maintainer email**          |
-| ------- | --------------- | ------------------------- |
-| Primary | Jason Cochrane  | Jason.Cochrane@boeing.com |
-| Backup  | Christopher McDermott  | christopher.mcdermott2@boeing.com
-
 ## Overview
 
 -ToDo
