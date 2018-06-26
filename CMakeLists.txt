@@ -4,9 +4,12 @@ project(gazebo_model_attachment_plugin)
 add_definitions(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
+    gazebo_msgs
     gazebo_ros
     message_generation
+    message_runtime
     roscpp
+    rospy
 )
 
 find_package(gazebo REQUIRED)
@@ -21,29 +24,40 @@ generate_messages()
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS
-        gazebo_ros
-        message_runtime
-        roscpp
-)
 
-include_directories(
-    include
-    ${catkin_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
-    ${GAZEBO_INCLUDE_DIRS}
-) 
+    CATKIN_DEPENDS 
+    gazebo_msgs
+    gazebo_ros
+    message_generation
+    message_runtime
+    roscpp
+    rospy
+)
 
 add_library(${PROJECT_NAME}
     include/${PROJECT_NAME}/${PROJECT_NAME}.h
     src/${PROJECT_NAME}.cpp
 )
 
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(
+    ${PROJECT_NAME}
+    ${GAZEBO_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${catkin_LIBRARIES}
+)
 
-target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
-install(DIRECTORY include/${PROJECT_NAME}/
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+include_directories(SYSTEM
+    ${catkin_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+    ${GAZEBO_INCLUDE_DIRS}
+)
+
+install(DIRECTORY
+    include/${PROJECT_NAME}/
     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
     FILES_MATCHING PATTERN "*.h"
 )
@@ -52,7 +66,15 @@ install(TARGETS
     ${PROJECT_NAME}
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+
+install(DIRECTORY test
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+catkin_install_python(PROGRAMS test/test_plugin.py
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 if(CATKIN_ENABLE_TESTING)

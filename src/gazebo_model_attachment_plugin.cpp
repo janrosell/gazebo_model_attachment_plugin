@@ -23,6 +23,7 @@ void ModelAttachmentPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
 {
     ROS_INFO("Initialising CustomWorldPlugin Plugin");
     world_ = world;
+    auto sdf_ptr = sdf;  // As all Parameters must be used -Wall, but we can't change internal Gazebo function
 
     if (!ros::isInitialized())
     {
@@ -225,7 +226,28 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
     if (!success)
         throw std::runtime_error("Unable to remove joint from model");
 
-    m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2));
+#if GAZEBO_MAJOR_VERSION >= 8
+    m2->SetParent(m1->GetWorld()->ModelByName("default"));
+#else
+    m2->SetParent(m1->GetWorld()->GetModel("default"));
+#endif
+
+    // We need to flush the children vector of the parent
+    // Calling m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2)); will also destroy the child
+    physics::Base_V temp_child_objects;
+    unsigned int children_count = m1->GetChildCount();
+    for (unsigned int i = 0; i < children_count; i++)
+    {
+        if (m1->GetChild(i) != m2)
+            temp_child_objects.push_back(m1->GetChild(i));
+    }
+
+    m1->RemoveChildren();
+
+    for (const auto& obj : temp_child_objects)
+    {
+        m1->AddChild(obj);
+    }
 
     return;
 }
