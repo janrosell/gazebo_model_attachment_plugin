@@ -7,12 +7,12 @@ find_package(catkin REQUIRED COMPONENTS
     gazebo_msgs
     gazebo_ros
     message_generation
-    message_runtime
     roscpp
-    rospy
 )
 
 find_package(gazebo REQUIRED)
+
+catkin_python_setup()
 
 add_service_files(FILES
     Attach.srv
@@ -22,16 +22,16 @@ add_service_files(FILES
 generate_messages()
 
 catkin_package(
-    INCLUDE_DIRS include
-    LIBRARIES ${PROJECT_NAME}
-
+    INCLUDE_DIRS
+        include
+    LIBRARIES
+        ${PROJECT_NAME}
     CATKIN_DEPENDS 
-    gazebo_msgs
-    gazebo_ros
-    message_generation
-    message_runtime
-    roscpp
-    rospy
+        gazebo_msgs
+        gazebo_ros
+        message_generation
+        message_runtime
+        roscpp
 )
 
 add_library(${PROJECT_NAME}
