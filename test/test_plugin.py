@@ -5,25 +5,16 @@ import unittest
 import rospy
 import rostest
 from gazebo_msgs.msg import ModelState
-from gazebo_msgs.srv import SetModelState, SetModelStateRequest, SetModelStateResponse
 from gazebo_msgs.srv import GetModelState, GetModelStateRequest, GetModelStateResponse
+from gazebo_msgs.srv import SetModelState, SetModelStateRequest, SetModelStateResponse
 from geometry_msgs.msg import Pose, Twist, Point, Quaternion, Vector3
 
-from gazebo_model_attachment_plugin.srv import Attach, AttachRequest, AttachResponse
-from gazebo_model_attachment_plugin.srv import Detach, DetachRequest, DetachResponse
+from gazebo_model_attachment_plugin.gazebo_client import GazeboModelAttachmentClient
 
 
 class TestPlugin(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.__attach_srv = rospy.ServiceProxy(
-            name='/gazebo/attach',
-            service_class=Attach
-        )
-        cls.__detach_srv = rospy.ServiceProxy(
-            name='/gazebo/detach',
-            service_class=Detach
-        )
         cls.__set_model_state_srv = rospy.ServiceProxy(
             name='/gazebo/set_model_state',
             service_class=SetModelState
@@ -32,39 +23,32 @@ class TestPlugin(unittest.TestCase):
             name='/gazebo/get_model_state',
             service_class=GetModelState
         )
-        cls.__attach_srv.wait_for_service(timeout=30)
-        cls.__detach_srv.wait_for_service(timeout=30)
+
+        cls.__attachment_client = GazeboModelAttachmentClient()
         cls.__get_model_state_srv.wait_for_service(timeout=30)
 
     def test_attach(self):
+        #
         # Test Model Attachment
+        #
 
-        response = self.__attach_srv.call(
-            AttachRequest(
-                joint_name='test_attachment_box',
-                model_name_1='box',
-                link_name_1='attachment_link',
-                model_name_2='sphere',
-                link_name_2='attachment_link'
-            )
+        self.__attachment_client.attach(
+            joint_name='test_attachment_box',
+            model_name_1='box',
+            link_name_1='attachment_link',
+            model_name_2='sphere',
+            link_name_2='attachment_link'
         )
-        self.assertIsInstance(response, AttachResponse)
-        self.assertTrue(response.success)
 
-        response = self.__attach_srv.call(
-            AttachRequest(
-                joint_name='test_attachment_cylinder',
-                model_name_1='box',
-                link_name_1='attachment_link',
-                model_name_2='cylinder',
-                link_name_2='attachment_link'
-            )
+        self.__attachment_client.attach(
+            joint_name='test_attachment_cylinder',
+            model_name_1='box',
+            link_name_1='attachment_link',
+            model_name_2='cylinder',
+            link_name_2='attachment_link'
         )
-        self.assertIsInstance(response, AttachResponse)
-        self.assertTrue(response.success)
 
         # Ensure the sphere is correctly set as a child of the box
-
         response = self.__set_model_state_srv.call(
             SetModelStateRequest(
                 model_state=ModelState(
@@ -105,17 +89,15 @@ class TestPlugin(unittest.TestCase):
                          box_model_state.pose.position.z)
         self.assertEqual(sphere_model_state.twist, box_model_state.twist)
 
+        #
         # Test Model Detachment
+        #
 
-        response = self.__detach_srv.call(
-            DetachRequest(
-                joint_name='test_attachment_box',
-                model_name_1='box',
-                model_name_2='sphere'
-            )
+        self.__attachment_client.detach(
+            joint_name='test_attachment_box',
+            model_name_1='box',
+            model_name_2='sphere',
         )
-        self.assertIsInstance(response, DetachResponse)
-        self.assertTrue(response.success)
 
         # Ensure Cylinder isn't dropped as a child when the Sphere is
 
