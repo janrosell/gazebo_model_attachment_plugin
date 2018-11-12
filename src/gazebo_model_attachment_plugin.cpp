@@ -1,6 +1,7 @@
 // Copyright 2018 Boeing
 #include <gazebo/physics/World.hh>
 #include <gazebo_model_attachment_plugin/gazebo_model_attachment_plugin.h>
+#include <sdf/sdf.hh>
 #include <string>
 #include <vector>
 
