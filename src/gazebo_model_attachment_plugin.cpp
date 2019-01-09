@@ -22,7 +22,6 @@ ModelAttachmentPlugin::~ModelAttachmentPlugin()
 // cppcheck-suppress unusedFunction
 void ModelAttachmentPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
 {
-    ROS_INFO("Initialising CustomWorldPlugin Plugin");
     world_ = world;
     auto sdf_ptr = sdf;  // As all Parameters must be used -Wall, but we can't change internal Gazebo function
 
