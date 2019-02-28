@@ -1,4 +1,3 @@
-// Copyright 2018 Boeing
 #ifndef GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
 #define GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
 
@@ -9,9 +8,7 @@
 #include <thread>
 #include <vector>
 
-#include <ros/callback_queue.h>
 #include <ros/ros.h>
-#include <ros/subscribe_options.h>
 
 #include <gazebo/common/Events.hh>
 #include <gazebo/common/Plugin.hh>
@@ -50,12 +47,7 @@ class ModelAttachmentPlugin : public WorldPlugin
     ros::NodeHandle nh_;
     ros::ServiceServer attach_srv_;
     ros::ServiceServer detach_srv_;
-
-    ros::CallbackQueue queue_;
-    std::thread callback_queue_thread_;
-    void queueThread();
 };
+}
 
-}  // namespace gazebo
-
-#endif  // GAZEBO_MODEL_ATTACHMENT_PLUGIN_H
+#endif

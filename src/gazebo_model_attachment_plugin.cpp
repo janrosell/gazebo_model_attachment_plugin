@@ -14,9 +14,6 @@ ModelAttachmentPlugin::ModelAttachmentPlugin()
 
 ModelAttachmentPlugin::~ModelAttachmentPlugin()
 {
-    queue_.clear();
-    queue_.disable();
-    callback_queue_thread_.join();
 }
 
 // cppcheck-suppress unusedFunction
@@ -25,17 +22,10 @@ void ModelAttachmentPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
     world_ = world;
     auto sdf_ptr = sdf;  // As all Parameters must be used -Wall, but we can't change internal Gazebo function
 
-    if (!ros::isInitialized())
-    {
-        ROS_FATAL_STREAM("A ROS node for Gazebo has not been initialized, unable to load plugin");
-        return;
-    }
     nh_ = ros::NodeHandle("~");
 
     attach_srv_ = nh_.advertiseService("attach", &ModelAttachmentPlugin::attachCallback, this);
     detach_srv_ = nh_.advertiseService("detach", &ModelAttachmentPlugin::detachCallback, this);
-
-    callback_queue_thread_ = std::thread(&ModelAttachmentPlugin::queueThread, this);
 }
 
 bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attach::Request& req,
@@ -158,15 +148,6 @@ bool ModelAttachmentPlugin::detachCallback(gazebo_model_attachment_plugin::Detac
     return true;
 }
 
-void ModelAttachmentPlugin::queueThread()
-{
-    const double timeout = 0.01;
-    while (nh_.ok())
-    {
-        queue_.callAvailable(ros::WallDuration(timeout));
-    }
-}
-
 void ModelAttachmentPlugin::attach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2,
                                    physics::LinkPtr l1, physics::LinkPtr l2)
 {
@@ -253,4 +234,4 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
 }
 
 GZ_REGISTER_WORLD_PLUGIN(ModelAttachmentPlugin)
-}  // namespace gazebo
+}
