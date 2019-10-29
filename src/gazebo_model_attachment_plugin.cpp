@@ -1,6 +1,7 @@
 // Copyright 2018 Boeing
-#include <gazebo/physics/World.hh>
 #include <gazebo_model_attachment_plugin/gazebo_model_attachment_plugin.h>
+
+#include <gazebo/physics/World.hh>
 #include <sdf/sdf.hh>
 #include <string>
 #include <vector>
@@ -17,10 +18,9 @@ ModelAttachmentPlugin::~ModelAttachmentPlugin()
 }
 
 // cppcheck-suppress unusedFunction
-void ModelAttachmentPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
+void ModelAttachmentPlugin::Load(physics::WorldPtr world, sdf::ElementPtr)
 {
     world_ = world;
-    auto sdf_ptr = sdf;  // As all Parameters must be used -Wall, but we can't change internal Gazebo function
 
     nh_ = ros::NodeHandle("~");
 
@@ -33,12 +33,14 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
 {
     ROS_INFO_STREAM("Received request to attach model: '" << req.model_name_1 << "' to '" << req.model_name_2);
 
-#if GAZEBO_MAJOR_VERSION >= 8
-    physics::ModelPtr m1 = world_->ModelByName(req.model_name_1);
-#else
-    physics::ModelPtr m1 = world_->GetModel(req.model_name_1);
-#endif
-    if (m1 == nullptr)
+    const std::string& model_1_name = req.model_name_1;
+    const std::string& model_2_name = req.model_name_2;
+    const gazebo::physics::Model_V models = world_->Models();
+
+    auto m1 = std::find_if(models.begin(), models.end(), [&model_1_name](const gazebo::physics::ModelPtr& ptr) {
+        return ptr->GetName() == model_1_name;
+    });
+    if (m1 == models.end())
     {
         const std::string error_msg = "Could not find model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
@@ -47,7 +49,19 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
         return true;
     }
 
-    physics::LinkPtr l1 = m1->GetLink(req.link_name_1);
+    auto m2 = std::find_if(models.begin(), models.end(), [&model_2_name](const gazebo::physics::ModelPtr& ptr) {
+        return ptr->GetName() == model_2_name;
+    });
+    if (m2 == models.end())
+    {
+        const std::string error_msg = "Could not find model " + req.model_name_2;
+        ROS_ERROR_STREAM(error_msg);
+        res.message = error_msg;
+        res.success = false;
+        return true;
+    }
+
+    physics::LinkPtr l1 = (*m1)->GetLink(req.link_name_1);
     if (l1 == nullptr)
     {
         const std::string error_msg = "Could not find link " + req.link_name_1 + " on model " + req.model_name_1;
@@ -57,21 +71,7 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
         return true;
     }
 
-#if GAZEBO_MAJOR_VERSION >= 8
-    physics::ModelPtr m2 = world_->ModelByName(req.model_name_2);
-#else
-    physics::ModelPtr m2 = world_->GetModel(req.model_name_2);
-#endif
-    if (m2 == nullptr)
-    {
-        const std::string error_msg = "Could not find model " + req.model_name_2;
-        ROS_ERROR_STREAM(error_msg);
-        res.message = error_msg;
-        res.success = false;
-        return true;
-    }
-
-    physics::LinkPtr l2 = m2->GetLink(req.link_name_2);
+    physics::LinkPtr l2 = (*m2)->GetLink(req.link_name_2);
     if (l2 == nullptr)
     {
         const std::string error_msg = "Could not find link " + req.link_name_2 + " on model " + req.model_name_2;
@@ -83,7 +83,7 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
 
     try
     {
-        attach(req.joint_name, m1, m2, l1, l2);
+        attach(req.joint_name, *m1, *m2, l1, l2);
     }
     catch (const std::exception& e)
     {
@@ -98,17 +98,20 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
     return true;
 }
 
+// cppcheck-suppress constParameter
 bool ModelAttachmentPlugin::detachCallback(gazebo_model_attachment_plugin::Detach::Request& req,
                                            gazebo_model_attachment_plugin::Detach::Response& res)
 {
     ROS_INFO_STREAM("Received request to detach model: '" << req.model_name_1 << "' from '" << req.model_name_2);
 
-#if GAZEBO_MAJOR_VERSION >= 8
-    physics::ModelPtr m1 = world_->ModelByName(req.model_name_1);
-#else
-    physics::ModelPtr m1 = world_->GetModel(req.model_name_1);
-#endif
-    if (m1 == nullptr)
+    const std::string& model_1_name = req.model_name_1;
+    const std::string& model_2_name = req.model_name_2;
+    const gazebo::physics::Model_V models = world_->Models();
+
+    auto m1 = std::find_if(models.begin(), models.end(), [&model_1_name](const gazebo::physics::ModelPtr& ptr) {
+        return ptr->GetName() == model_1_name;
+    });
+    if (m1 == models.end())
     {
         const std::string error_msg = "Could not find model " + req.model_name_1;
         ROS_ERROR_STREAM(error_msg);
@@ -117,12 +120,10 @@ bool ModelAttachmentPlugin::detachCallback(gazebo_model_attachment_plugin::Detac
         return true;
     }
 
-#if GAZEBO_MAJOR_VERSION >= 8
-    physics::ModelPtr m2 = world_->ModelByName(req.model_name_2);
-#else
-    physics::ModelPtr m2 = world_->GetModel(req.model_name_2);
-#endif
-    if (m2 == nullptr)
+    auto m2 = std::find_if(models.begin(), models.end(), [&model_2_name](const gazebo::physics::ModelPtr& ptr) {
+        return ptr->GetName() == model_2_name;
+    });
+    if (m2 == models.end())
     {
         const std::string error_msg = "Could not find model " + req.model_name_2;
         ROS_ERROR_STREAM(error_msg);
@@ -133,7 +134,7 @@ bool ModelAttachmentPlugin::detachCallback(gazebo_model_attachment_plugin::Detac
 
     try
     {
-        detach(req.joint_name, m1, m2);
+        detach(req.joint_name, *m1, *m2);
     }
     catch (const std::exception& e)
     {
@@ -163,22 +164,13 @@ void ModelAttachmentPlugin::attach(const std::string& joint_name, physics::Model
     if (l2 == nullptr)
         throw std::runtime_error("Link 2 is null");
 
-#if GAZEBO_MAJOR_VERSION >= 8
     ignition::math::Pose3d l1wp = l1->WorldPose();
     ignition::math::Pose3d l2rp = l2->RelativePose();
-#else
-    math::Pose l1wp = l1->GetWorldPose();
-    math::Pose l2rp = l2->GetRelativePose();
-#endif
 
     const bool is_paused = world_->IsPaused();
     world_->SetPaused(true);
 
-#if GAZEBO_MAJOR_VERSION >= 8
     m2->SetWorldPose(l1wp * l2rp.Inverse());
-#else
-    m2->SetWorldPose(l1wp * l2rp.GetInverse());
-#endif
 
     physics::JointPtr joint = m1->CreateJoint(joint_name, "fixed", l1, l2);
 
@@ -207,11 +199,7 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
     if (!success)
         throw std::runtime_error("Unable to remove joint from model");
 
-#if GAZEBO_MAJOR_VERSION >= 8
     m2->SetParent(m1->GetWorld()->ModelByName("default"));
-#else
-    m2->SetParent(m1->GetWorld()->GetModel("default"));
-#endif
 
     // We need to flush the children vector of the parent
     // Calling m1->RemoveChild(boost::dynamic_pointer_cast<physics::Entity>(m2)); will also destroy the child
@@ -234,4 +222,4 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
 }
 
 GZ_REGISTER_WORLD_PLUGIN(ModelAttachmentPlugin)
-}
+}  // namespace gazebo

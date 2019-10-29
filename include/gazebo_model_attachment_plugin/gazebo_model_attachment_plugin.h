@@ -3,11 +3,8 @@
 
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <mutex>
-#include <string>
-#include <thread>
-#include <vector>
-
+#include <gazebo_model_attachment_plugin/Attach.h>
+#include <gazebo_model_attachment_plugin/Detach.h>
 #include <ros/ros.h>
 
 #include <gazebo/common/Events.hh>
@@ -15,9 +12,10 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/transport/TransportTypes.hh>
 #include <gazebo/transport/transport.hh>
-
-#include <gazebo_model_attachment_plugin/Attach.h>
-#include <gazebo_model_attachment_plugin/Detach.h>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <vector>
 
 namespace gazebo
 {
@@ -48,6 +46,6 @@ class ModelAttachmentPlugin : public WorldPlugin
     ros::ServiceServer attach_srv_;
     ros::ServiceServer detach_srv_;
 };
-}
+}  // namespace gazebo
 
 #endif
