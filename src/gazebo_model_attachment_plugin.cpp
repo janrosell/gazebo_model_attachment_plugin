@@ -33,6 +33,9 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
 {
     ROS_INFO_STREAM("Received request to attach model: '" << req.model_name_1 << "' to '" << req.model_name_2);
 
+    // block any other physics pose updates
+    boost::recursive_mutex::scoped_lock plock(*(world_->Physics()->GetPhysicsUpdateMutex()));
+
     const std::string& model_1_name = req.model_name_1;
     const std::string& model_2_name = req.model_name_2;
     const gazebo::physics::Model_V models = world_->Models();
@@ -164,13 +167,12 @@ void ModelAttachmentPlugin::attach(const std::string& joint_name, physics::Model
     if (l2 == nullptr)
         throw std::runtime_error("Link 2 is null");
 
-    ignition::math::Pose3d l1wp = l1->WorldPose();
-    ignition::math::Pose3d l2rp = l2->RelativePose();
+    ignition::math::Pose3d m1wp = m1->WorldPose();
+    ignition::math::Pose3d l1rl = l1->RelativePose();
+    ignition::math::Pose3d l2rl = l2->RelativePose();
+    ignition::math::Pose3d p = (l2rl.Inverse() * l1rl * m1wp);
 
-    const bool is_paused = world_->IsPaused();
-    world_->SetPaused(true);
-
-    m2->SetWorldPose(l1wp * l2rp.Inverse());
+    m2->SetWorldPose(p);
 
     physics::JointPtr joint = m1->CreateJoint(joint_name, "fixed", l1, l2);
 
@@ -178,8 +180,6 @@ void ModelAttachmentPlugin::attach(const std::string& joint_name, physics::Model
         throw std::runtime_error("CreateJoint returned nullptr");
 
     m1->AddChild(m2);
-
-    world_->SetPaused(is_paused);
 }
 
 void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2)
