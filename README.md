@@ -32,15 +32,6 @@ This package enables such simulations by allowing _Models_ to be attached to eac
 - The plugin will not teleport the child model to make the pose of  _model_name_1/link_name_1_ match _model_name_2/link_name_2_. The attachment will instead occur with the pose difference at the time of the service call being maintained. 
     - If the user wishes to have zero pose difference a call to the _gazebo/set_link_state_ service can be made. 
 
-## API
-
-#### Advertised Services
-
-##### srv/Attach.srv:
-- Default topic: /gazebo/attach
-##### srv/Detach:
-- Default topic: /gazebo/detach
-
 ## Requirements Evaluation 
 
 | Requirement | Met? | Comments |
