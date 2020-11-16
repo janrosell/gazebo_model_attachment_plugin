@@ -2,43 +2,48 @@
 [![pipeline status](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/badges/master/pipeline.svg)](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/commits/master)
 [![coverage](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/badges/master/coverage.svg)](https://git.web.boeing.com/robotics/ros/gazebo_model_attachment_plugin/commits/master)
 
-## Overview
-
-This plugin exposes an attachment and also detachment services that can be called with ROS service call.
-
 ## Motivation
+ Once a model has been spawned within Gazebo, it can often be necessary to add or remove _Links_ at runtime without destroying the model. This can be necessary for simulating actions such as end effector swap, item transport (loading and uploading), or pick and place operations. 
+This package enables such simulations by allowing _Models_ to be attached to each other.
 
-Implements the ability for realtime attach/detach of models in Gazebo. This is essential for processes such as EE change or consumable swap.
+## Goals
+- The plugin shall provide a way for models within Gazebo to be ridgidly attached to each other such that one will follow the others movements.
 
-## API
+## Requirements
+- This shall advertise an attachment and a detachment service that can be called with a ROS service call.
+- These service calls allow _Models_ within Gazebo to be joined rigidly at the _Link_ level at runtime. This is essential for simulating processes such as End Effector change / removal or consumable swap.
 
-#### Advertised Services
+## Definitions
 
-##### Attach - /gazebo/attach
-```python
-    AttachRequest (
-        joint_name='joint_name',
-        model_name_1='model_1',
-        link_name_1='attachment_link',
-        model_name_2='model_2',
-        link_name_2='attachment_link'
-    )
-```
+| Definition | Description                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Model       | An instanced SDF in Gazebo. _Models_ consist of _Links_ connected by _Joints_.                                                                                                               |
+| Link        | A sub component of a _Model_. This plugin creates static 'attachment' _Joints_ between _Links_. _Links_ can contain geometry elements or attached plugins.                                                                                                               |
+| Joint       | A connection between _Links_ in Gazebo. 
 
-##### Detach - /gazebo/detach
-```python 
-    DetachRequest (
-        joint_name='joint_name',
-        model_name_1='model_1',
-        model_name_2='model_2'
-    )
-```
-## Installation
+## Design
 
-Add the package to your .rosinstall file and then add the following line of code to your .world file.
+### Assumptions
 
-```xml
-<gazebo>
-    <plugin name="gazebo_model_attachment_plugin" filename="libgazebo_model_attachment_plugin.so"></plugin>
-</gazebo>
-```
+- The models must have been spawned and contain the specified link names.
+- Physics should be disabled using _gazebo_no_physics_plugin_. 
+
+### Limitations
+- The plugin will not teleport the child model to make the pose of  _model_name_1/link_name_1_ match _model_name_2/link_name_2_. The attachment will instead occur with the pose difference at the time of the service call being maintained. 
+    - If the user wishes to have zero pose difference a call to the _gazebo/set_link_state_ service can be made. 
+
+## Requirements Evaluation 
+
+| Requirement | Met? | Comments |
+| ------------| ------- | ---------- |
+| Attach a model to another model at the link level. | Yes | None |
+| Destroy a previously created attachment. | Yes | None |
+
+
+## Related Components
+| Name                | Link                                                                       |
+| ------------------- | -------------------------------------------------------------------------- |
+| ee_manager | https://git.web.boeing.com/robotics/ros/ee_manager                |
+| gazebo_ros_pkgs | https://git.web.boeing.com/robotics/ros-thirdparty/gazebo_ros_pkgs |
+| ee_manager              | https://git.web.boeing.com/robotics/ros/ee_manager |
+| gazebo_no_physics_plugin | https://git.web.boeing.com/robotics/ros/gazebo_no_physics_plugin |
