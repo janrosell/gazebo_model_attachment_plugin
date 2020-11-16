@@ -45,5 +45,4 @@ This package enables such simulations by allowing _Models_ to be attached to eac
 | ------------------- | -------------------------------------------------------------------------- |
 | ee_manager | https://git.web.boeing.com/robotics/ros/ee_manager                |
 | gazebo_ros_pkgs | https://git.web.boeing.com/robotics/ros-thirdparty/gazebo_ros_pkgs |
-| ee_manager              | https://git.web.boeing.com/robotics/ros/ee_manager |
 | gazebo_no_physics_plugin | https://git.web.boeing.com/robotics/ros/gazebo_no_physics_plugin |
