@@ -101,7 +101,7 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
     return true;
 }
 
-// cppcheck-suppress constParameter
+// cppcheck-suppress constParameterCallback
 bool ModelAttachmentPlugin::detachCallback(gazebo_model_attachment_plugin::Detach::Request& req,
                                            gazebo_model_attachment_plugin::Detach::Response& res)
 {
