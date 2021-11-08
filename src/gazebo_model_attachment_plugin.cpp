@@ -101,7 +101,7 @@ bool ModelAttachmentPlugin::attachCallback(gazebo_model_attachment_plugin::Attac
     return true;
 }
 
-// cppcheck-suppress constParameter
+// cppcheck-suppress constParameterCallback
 bool ModelAttachmentPlugin::detachCallback(gazebo_model_attachment_plugin::Detach::Request& req,
                                            gazebo_model_attachment_plugin::Detach::Response& res)
 {
@@ -170,7 +170,7 @@ void ModelAttachmentPlugin::attach(const std::string& joint_name, physics::Model
     ignition::math::Pose3d m1wp = m1->WorldPose();
     ignition::math::Pose3d l1rl = l1->RelativePose();
     ignition::math::Pose3d l2rl = l2->RelativePose();
-    ignition::math::Pose3d p = (l2rl.Inverse() * l1rl * m1wp);
+    ignition::math::Pose3d p = (m1wp * l1rl * l2rl.Inverse());
 
     m2->SetWorldPose(p);
 
