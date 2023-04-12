@@ -1,8 +1,16 @@
 <sdf version='1.6'>
     <world name='default'>
 
-        <plugin name="model_attachment_plugin" filename="libgazebo_model_attachment_plugin.so"></plugin>
+        <plugin name="model_attachment_plugin" filename="libgazebo_model_attachment_plugin_lib.so"></plugin>
+        <plugin name="gazebo_no_physics_world_plugin" filename="libgazebo_no_physics_world_plugin.so"></plugin>
+        <plugin name="gazebo_ros_state" filename="libgazebo_ros_state.so">
+            <ros>
+                <namespace>/gazebo</namespace>
+            </ros>
 
+            <update_rate>1.0</update_rate>
+        </plugin>
+        
         <light name='sun' type='directional'>
             <cast_shadows>1</cast_shadows>
             <pose frame=''>0 0 10 0 -0 0</pose>

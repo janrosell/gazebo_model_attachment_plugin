@@ -1,58 +1,77 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.8)
 project(gazebo_model_attachment_plugin)
 
-add_definitions(-std=c++14)
-
-find_package(catkin REQUIRED COMPONENTS gazebo_msgs gazebo_ros message_generation roscpp)
-
-find_package(gazebo REQUIRED)
-
-catkin_python_setup()
-
-add_service_files(FILES Attach.srv Detach.srv)
-
-generate_messages()
-
-catkin_package(
-    INCLUDE_DIRS
-    include
-    LIBRARIES
-    ${PROJECT_NAME}
-    CATKIN_DEPENDS
-    gazebo_msgs
-    gazebo_ros
-    message_generation
-    message_runtime
-    roscpp
-)
-
-add_library(${PROJECT_NAME} include/${PROJECT_NAME}/${PROJECT_NAME}.h src/${PROJECT_NAME}.cpp)
-
-target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-include_directories(SYSTEM ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
-
-install(
-    DIRECTORY include/${PROJECT_NAME}/
-    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-    FILES_MATCHING
-    PATTERN "*.h"
-)
-
-install(
-    TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-)
-
-install(DIRECTORY test DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
-if(CATKIN_ENABLE_TESTING)
-    find_package(rostest REQUIRED)
-    add_rostest(test/test_plugin.test)
+# Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+find_package(rclcpp REQUIRED)
+find_package(gazebo_msgs REQUIRED)
+find_package(gazebo_ros REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(gazebo_dev REQUIRED)
+find_package(Boost REQUIRED)
+
+# Locate msg and srv files
+set(srv_files "srv/Attach.srv" "srv/Detach.srv")
+
+#
+# Install python module and scripts
+#
+ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
+
+include_directories(include)
+
+# Generate msg and srv interfaces
+rosidl_generate_interfaces(
+    ${PROJECT_NAME} ${srv_files}
+)
+ament_export_dependencies(rosidl_default_runtime)
+
+add_library(${PROJECT_NAME}_lib SHARED src/${PROJECT_NAME}.cpp)
+
+target_include_directories(
+        ${PROJECT_NAME}_lib PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(${PROJECT_NAME}_lib rclcpp gazebo_msgs gazebo_ros std_msgs gazebo_dev)
+ament_export_dependencies(gazebo_dev rclcpp gazebo_msgs gazebo_ros std_msgs)
+
+# Include interfaces generated in this package
+rosidl_target_interfaces(${PROJECT_NAME}_lib ${PROJECT_NAME} "rosidl_typesupport_cpp")
+
+ament_export_targets(ModelAttachment HAS_LIBRARY_TARGET)
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME}_lib)
+
+install(DIRECTORY include DESTINATION include)
+
+install(
+        TARGETS ${PROJECT_NAME}_lib
+        EXPORT ModelAttachment
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES
+        DESTINATION include
+)
+
+#
+# Add ros tests
+#
+enable_testing()
+find_file(NOSETESTS_EXECUTABLE nosetests)
+add_test(nosetests "${NOSETESTS_EXECUTABLE}" -v --with-xunit)
+
+install(DIRECTORY test DESTINATION share/${PROJECT_NAME})
+
+find_package(launch_testing_ament_cmake)
+add_launch_test(test/test_plugin.test.py)
+
+ament_package()
