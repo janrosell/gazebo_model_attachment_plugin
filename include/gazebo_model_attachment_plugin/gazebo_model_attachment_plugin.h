@@ -3,9 +3,10 @@
 
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <gazebo_model_attachment_plugin/Attach.h>
-#include <gazebo_model_attachment_plugin/Detach.h>
-#include <ros/ros.h>
+#include <gazebo_model_attachment_plugin/srv/attach.hpp>
+#include <gazebo_model_attachment_plugin/srv/detach.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include "gazebo_ros/node.hpp"
 
 #include <gazebo/common/Events.hh>
 #include <gazebo/common/Plugin.hh>
@@ -20,8 +21,8 @@
 namespace gazebo
 {
 
-class ModelAttachmentPlugin : public WorldPlugin
-{
+  class ModelAttachmentPlugin : public WorldPlugin
+  {
   public:
     ModelAttachmentPlugin();
 
@@ -33,19 +34,20 @@ class ModelAttachmentPlugin : public WorldPlugin
   private:
     physics::WorldPtr world_;
 
-    bool attachCallback(gazebo_model_attachment_plugin::Attach::Request& req,
-                        gazebo_model_attachment_plugin::Attach::Response& res);
-    bool detachCallback(gazebo_model_attachment_plugin::Detach::Request& req,
-                        gazebo_model_attachment_plugin::Detach::Response& res);
+    bool attachCallback(const std::shared_ptr<gazebo_model_attachment_plugin::srv::Attach::Request> req,
+                        std::shared_ptr<gazebo_model_attachment_plugin::srv::Attach::Response> res);
+    bool detachCallback(const std::shared_ptr<gazebo_model_attachment_plugin::srv::Detach::Request> req,
+                        std::shared_ptr<gazebo_model_attachment_plugin::srv::Detach::Response> res);
 
-    void attach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2, physics::LinkPtr l1,
+    void attach(const std::string &joint_name, physics::ModelPtr m1, physics::ModelPtr m2, physics::LinkPtr l1,
                 physics::LinkPtr l2);
-    void detach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2);
+    void detach(const std::string &joint_name, physics::ModelPtr m1, physics::ModelPtr m2);
 
-    ros::NodeHandle nh_;
-    ros::ServiceServer attach_srv_;
-    ros::ServiceServer detach_srv_;
-};
-}  // namespace gazebo
+    gazebo_ros::Node::SharedPtr node_;
+
+    rclcpp::Service<gazebo_model_attachment_plugin::srv::Attach>::SharedPtr attach_srv_;
+    rclcpp::Service<gazebo_model_attachment_plugin::srv::Detach>::SharedPtr detach_srv_;
+  };
+} // namespace gazebo
 
 #endif
