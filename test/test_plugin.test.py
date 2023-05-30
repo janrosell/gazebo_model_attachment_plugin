@@ -13,12 +13,6 @@ import launch_testing.actions
 from ament_index_python import get_package_share_directory
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
-from launch_ros.substitutions import FindPackageShare
-from rclpy.parameter import Parameter
-from rclpy.executors import MultiThreadedExecutor
-from threading import Thread
-from rclpy.node import Node
 
 from gazebo_msgs.msg import EntityState
 from gazebo_msgs.srv import GetEntityState
