@@ -3,7 +3,7 @@ project(gazebo_model_attachment_plugin)
 
 # Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD 17)
 endif()
 
 find_package(ament_cmake REQUIRED)
@@ -28,15 +28,13 @@ ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
 include_directories(include)
 
 # Generate msg and srv interfaces
-rosidl_generate_interfaces(
-    ${PROJECT_NAME} ${srv_files}
-)
+rosidl_generate_interfaces(${PROJECT_NAME} ${srv_files})
 ament_export_dependencies(rosidl_default_runtime)
 
 add_library(${PROJECT_NAME}_lib SHARED src/${PROJECT_NAME}.cpp)
 
 target_include_directories(
-        ${PROJECT_NAME}_lib PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
+    ${PROJECT_NAME}_lib PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
 )
 
 ament_target_dependencies(${PROJECT_NAME}_lib rclcpp gazebo_msgs gazebo_ros std_msgs gazebo_dev)
@@ -53,13 +51,13 @@ ament_export_libraries(${PROJECT_NAME}_lib)
 install(DIRECTORY include DESTINATION include)
 
 install(
-        TARGETS ${PROJECT_NAME}_lib
-        EXPORT ModelAttachment
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES
-        DESTINATION include
+    TARGETS ${PROJECT_NAME}_lib
+    EXPORT ModelAttachment
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES
+    DESTINATION include
 )
 
 #
