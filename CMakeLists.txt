@@ -77,7 +77,7 @@ if(BUILD_TESTING)
     # add_ros_test(tests/execution_engine/test_go_to_working_position.test.py)
     # add_ros_test(tests/manipulation/retract_safely_skill.test.py)
     # add_ros_test(tests/execution_engine/test_drive_to_pose.test.py)
-    add_launch_test(test/test_smach.py)
+    add_launch_test(test/test_plugin.test.py)
 
 endif()
 
