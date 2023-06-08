@@ -5,4 +5,4 @@ include:
       - ci-templates/lfs-pull.yml
 
 variables:
-  VERBOSE_TESTS: true
+  VERBOSE_TESTS: "true"
