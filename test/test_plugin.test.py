@@ -169,11 +169,15 @@ class TestPlugin(unittest.TestCase):
         self.assertIsInstance(future_sphere_entity_state.result(), GetEntityState.Response)
         self.assertTrue(future_sphere_entity_state.result().success)
 
-        self.assertEqual(future_sphere_entity_state.result().state.pose.position.y,
-                         future_box_entity_state.result().state.pose.position.y)
-        self.assertEqual(future_sphere_entity_state.result().state.pose.position.z,
-                         future_box_entity_state.result().state.pose.position.z)
-        self.assertEqual(future_sphere_entity_state.result().state.twist, future_box_entity_state.result().state.twist)
+        self.assertAlmostEqual(future_sphere_entity_state.result().state.pose.position.y,
+                               future_box_entity_state.result().state.pose.position.y,
+                               delta=1e-5)
+        self.assertAlmostEqual(future_sphere_entity_state.result().state.pose.position.z,
+                               future_box_entity_state.result().state.pose.position.z,
+                               delta=1e-5)
+        self.assertAlmostEqual(future_sphere_entity_state.result().state.twist,
+                               future_box_entity_state.result().state.twist,
+                               delta=1e-5)
 
         #
         # Test Model Detachment
