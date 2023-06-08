@@ -63,9 +63,8 @@ install(
 #
 # Add ros tests
 #
-# enable_testing()
-# find_file(NOSETESTS_EXECUTABLE nosetests)
-# add_test(nosetests "${NOSETESTS_EXECUTABLE}" -v --with-xunit)
+# enable_testing() find_file(NOSETESTS_EXECUTABLE nosetests) add_test(nosetests "${NOSETESTS_EXECUTABLE}" -v
+# --with-xunit)
 
 # Add Tests
 if(BUILD_TESTING)
