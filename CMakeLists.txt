@@ -70,14 +70,14 @@ install(
 # Add Tests
 if(BUILD_TESTING)
     install(DIRECTORY test DESTINATION share/${PROJECT_NAME})
-    find_package(ros_testing REQUIRED)
+    find_package(launch_testing_ament_cmake REQUIRED)
 
     # Add tests add_ros_test(tests/execution_engine/test_scenario_1.test.py)
     # add_ros_test(tests/execution_engine/test_go_to_working_position_from_job.test.py)
     # add_ros_test(tests/execution_engine/test_go_to_working_position.test.py)
     # add_ros_test(tests/manipulation/retract_safely_skill.test.py)
     # add_ros_test(tests/execution_engine/test_drive_to_pose.test.py)
-    add_ros_test(test/test_plugin.test.py)
+    add_launch_test(test/test_smach.py)
 
 endif()
 
