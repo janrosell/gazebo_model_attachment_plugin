@@ -3,3 +3,6 @@ include:
     file:
       - ci-templates/auto-rules/humble-default.yml
       - ci-templates/lfs-pull.yml
+
+variables:
+  VERBOSE_TESTS: true
