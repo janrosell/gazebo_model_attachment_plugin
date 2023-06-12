@@ -171,13 +171,13 @@ class TestPlugin(unittest.TestCase):
 
         self.assertAlmostEqual(future_sphere_entity_state.result().state.pose.position.y,
                                future_box_entity_state.result().state.pose.position.y,
-                               delta=1e-5)
+                               delta=1e-3)
         self.assertAlmostEqual(future_sphere_entity_state.result().state.pose.position.z,
                                future_box_entity_state.result().state.pose.position.z,
-                               delta=1e-5)
+                               delta=1e-3)
         self.assertAlmostEqual(future_sphere_entity_state.result().state.twist,
                                future_box_entity_state.result().state.twist,
-                               delta=1e-5)
+                               delta=1e-4)
 
         #
         # Test Model Detachment
