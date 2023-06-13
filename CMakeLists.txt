@@ -70,6 +70,7 @@ install(
 if(BUILD_TESTING)
     install(DIRECTORY test DESTINATION share/${PROJECT_NAME})
     find_package(launch_testing_ament_cmake REQUIRED)
+    find_package(gazebo_no_physics_plugin REQUIRED)
 
     # Add tests add_ros_test(tests/execution_engine/test_scenario_1.test.py)
     # add_ros_test(tests/execution_engine/test_go_to_working_position_from_job.test.py)
