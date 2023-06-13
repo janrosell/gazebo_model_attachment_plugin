@@ -6,7 +6,6 @@
 #include <gazebo_model_attachment_plugin/srv/attach.hpp>
 #include <gazebo_model_attachment_plugin/srv/detach.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include "gazebo_ros/node.hpp"
 
 #include <gazebo/common/Events.hh>
 #include <gazebo/common/Plugin.hh>
@@ -18,11 +17,13 @@
 #include <thread>
 #include <vector>
 
+#include "gazebo_ros/node.hpp"
+
 namespace gazebo
 {
 
-  class ModelAttachmentPlugin : public WorldPlugin
-  {
+class ModelAttachmentPlugin : public WorldPlugin
+{
   public:
     ModelAttachmentPlugin();
 
@@ -39,15 +40,15 @@ namespace gazebo
     bool detachCallback(const std::shared_ptr<gazebo_model_attachment_plugin::srv::Detach::Request> req,
                         std::shared_ptr<gazebo_model_attachment_plugin::srv::Detach::Response> res);
 
-    void attach(const std::string &joint_name, physics::ModelPtr m1, physics::ModelPtr m2, physics::LinkPtr l1,
+    void attach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2, physics::LinkPtr l1,
                 physics::LinkPtr l2);
-    void detach(const std::string &joint_name, physics::ModelPtr m1, physics::ModelPtr m2);
+    void detach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2);
 
     gazebo_ros::Node::SharedPtr node_;
 
     rclcpp::Service<gazebo_model_attachment_plugin::srv::Attach>::SharedPtr attach_srv_;
     rclcpp::Service<gazebo_model_attachment_plugin::srv::Detach>::SharedPtr detach_srv_;
-  };
-} // namespace gazebo
+};
+}  // namespace gazebo
 
 #endif

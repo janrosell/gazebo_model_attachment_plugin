@@ -3,7 +3,7 @@ project(gazebo_model_attachment_plugin)
 
 # Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD 17)
 endif()
 
 find_package(ament_cmake REQUIRED)
@@ -28,15 +28,13 @@ ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
 include_directories(include)
 
 # Generate msg and srv interfaces
-rosidl_generate_interfaces(
-    ${PROJECT_NAME} ${srv_files}
-)
+rosidl_generate_interfaces(${PROJECT_NAME} ${srv_files})
 ament_export_dependencies(rosidl_default_runtime)
 
 add_library(${PROJECT_NAME}_lib SHARED src/${PROJECT_NAME}.cpp)
 
 target_include_directories(
-        ${PROJECT_NAME}_lib PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
+    ${PROJECT_NAME}_lib PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
 )
 
 ament_target_dependencies(${PROJECT_NAME}_lib rclcpp gazebo_msgs gazebo_ros std_msgs gazebo_dev)
@@ -53,25 +51,34 @@ ament_export_libraries(${PROJECT_NAME}_lib)
 install(DIRECTORY include DESTINATION include)
 
 install(
-        TARGETS ${PROJECT_NAME}_lib
-        EXPORT ModelAttachment
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES
-        DESTINATION include
+    TARGETS ${PROJECT_NAME}_lib
+    EXPORT ModelAttachment
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES
+    DESTINATION include
 )
 
 #
 # Add ros tests
 #
-enable_testing()
-find_file(NOSETESTS_EXECUTABLE nosetests)
-add_test(nosetests "${NOSETESTS_EXECUTABLE}" -v --with-xunit)
+# enable_testing() find_file(NOSETESTS_EXECUTABLE nosetests) add_test(nosetests "${NOSETESTS_EXECUTABLE}" -v
+# --with-xunit)
 
-install(DIRECTORY test DESTINATION share/${PROJECT_NAME})
+# Add Tests
+if(BUILD_TESTING)
+    install(DIRECTORY test DESTINATION share/${PROJECT_NAME})
+    find_package(launch_testing_ament_cmake REQUIRED)
+    find_package(gazebo_no_physics_plugin REQUIRED)
 
-find_package(launch_testing_ament_cmake)
-add_launch_test(test/test_plugin.test.py)
+    # Add tests add_ros_test(tests/execution_engine/test_scenario_1.test.py)
+    # add_ros_test(tests/execution_engine/test_go_to_working_position_from_job.test.py)
+    # add_ros_test(tests/execution_engine/test_go_to_working_position.test.py)
+    # add_ros_test(tests/manipulation/retract_safely_skill.test.py)
+    # add_ros_test(tests/execution_engine/test_drive_to_pose.test.py)
+    add_launch_test(test/test_plugin.test.py)
+
+endif()
 
 ament_package()

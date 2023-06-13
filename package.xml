@@ -23,11 +23,12 @@
 
     <exec_depend>rclpy</exec_depend>
 
-    <!-- <test_depend>rostest</test_depend> -->
+    <test_depend>launch_testing_ament_cmake</test_depend>
+    <test_depend>ros2launch</test_depend>
+    <test_depend>gazebo_no_physics_plugin</test_depend>
 
     <export>
         <build_type>ament_cmake</build_type>
         <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}"/>
     </export>
 </package>
-
