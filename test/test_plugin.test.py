@@ -173,7 +173,8 @@ class TestPlugin(unittest.TestCase):
                          future_box_entity_state.result().state.pose.position.y)
         self.assertEqual(future_sphere_entity_state.result().state.pose.position.z,
                          future_box_entity_state.result().state.pose.position.z)
-        self.assertEqual(future_sphere_entity_state.result().state.twist, future_box_entity_state.result().state.twist)
+        self.assertEqual(future_sphere_entity_state.result().state.twist,
+                         future_box_entity_state.result().state.twist)
 
         #
         # Test Model Detachment
