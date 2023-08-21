@@ -46,6 +46,7 @@ class GazeboModelAttachmentClient(object):
 
         if response.success:
             self.__logger.info('Successfully attached models by adding joint {}'.format(joint_name))
+            return response
         else:
             raise Exception('Failed to attach models: {}<--{}-->{} - {}'
                             .format(model_name_1, joint_name, model_name_2, response.message))
@@ -70,6 +71,7 @@ class GazeboModelAttachmentClient(object):
 
         if response.success:
             self.__logger.info('Successfully detached models by removing joint {}'.format(joint_name))
+            return response
         else:
             raise Exception('Failed to detach models: {}<--{}-->{} - {}'
                             .format(model_name_1, joint_name, model_name_2, response.message))
