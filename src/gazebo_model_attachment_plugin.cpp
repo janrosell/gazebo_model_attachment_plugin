@@ -181,7 +181,8 @@ void ModelAttachmentPlugin::attach(const std::string& joint_name, physics::Model
     ignition::math::Pose3d l1rl = l1->RelativePose();
     ignition::math::Pose3d l2rl = l2->RelativePose();
     ignition::math::Pose3d p = (m1wp * l1rl * l2rl.Inverse());
-
+    const bool is_paused = world_->IsPaused();
+    world_->SetPaused(true);
     m2->SetWorldPose(p);
 
     physics::JointPtr joint = m1->CreateJoint(joint_name, "fixed", l1, l2);
@@ -190,6 +191,7 @@ void ModelAttachmentPlugin::attach(const std::string& joint_name, physics::Model
         throw std::runtime_error("CreateJoint returned nullptr");
 
     m1->AddChild(m2);
+    world_->SetPaused(is_paused);
 }
 
 void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::ModelPtr m1, physics::ModelPtr m2)
@@ -204,6 +206,8 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
     if (joint == nullptr)
         throw std::runtime_error("No joint on model " + m1->GetName() + " by name " + joint_name);
 
+    const bool is_paused = world_->IsPaused();
+    world_->SetPaused(true);
     bool success = m1->RemoveJoint(joint_name);
 
     if (!success)
@@ -227,6 +231,7 @@ void ModelAttachmentPlugin::detach(const std::string& joint_name, physics::Model
     {
         m1->AddChild(obj);
     }
+    world_->SetPaused(is_paused);
 
     return;
 }
