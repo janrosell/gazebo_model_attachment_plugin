@@ -14,19 +14,17 @@ DISTRO: humble
 ### Assumptions
 
 - The models must have been spawned and contain the specified link names.
-- Physics should be disabled using _gazebo_no_physics_plugin_.
 
 ### Limitations
 
 - The plugin will not teleport the child model to make the pose of  _model_name_1/link_name_1_ match _model_name_2/link_name_2_. The attachment will instead occur with the pose difference at the time of the service call being maintained.
   - If the user wishes to have zero pose difference a call to the _gazebo/set_link_state_ service can be made.
 
-
 ## Installation
 
 ### Dependencies
 
-TODO
+- None
 
 ### Installation from Packages
 
@@ -79,43 +77,34 @@ Run Gazebo
 
     gazebo ~/gazebo_plugin_tutorial/test.world
 
-#### Services
+#### Provided Services
 
 * **`attach`** (boeing_gazebo_model_attachment_plugin/Attach.srv)
 
 	Creates a joint between two links
-# License
 
 		{{SERVICE_CMD}} call /gazebo_model_attachment_plugin/attach
 
   ##### Parameters
 
-  * **`model_1`** (string)
-
+  * **`model_1`** (string) -
 	The name of the parent model.
 
-  * **`link_1`** (string)
+  * **`link_1`** (string) -
   The name of the link on the parent model.
   
-  * **`model_2`** (string)
-
+  * **`model_2`** (string) -
 	The name of the child model.
 
-  * **`link_2`** (string)
+  * **`link_2`** (string) -
   The name of the link on the child model.
-<br/>
+
+
 * **`detach`** (boeing_gazebo_model_attachment_plugin/Detach.srv)
-  removes a joint between two links
+  removes a joint between two links.
 
 		{{SERVICE_CMD}} call /gazebo_model_attachment_plugin/detach
-  ##### Parameters
 
-  * **`link_1`** (string)
-  The name of the link on the parent model.
-  
-
-  * **`link_2`** (string)
-  The name of the link on the child model.
 
 
 # Authors
