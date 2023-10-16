@@ -21,20 +21,10 @@
 ## Installation
 
 ### Dependencies
+Due to this [change](https://github.com/ros2/rosidl_python/pull/131) in rosidl_python currently you can not build a package that both generates interfaces and installs a Python package. While we are waiting for the fix to be merged you must build the following branch of rosidl_python locally.
 
-- None
+- [rosidl_python - fix-141](https://github.com/knorth55/rosidl_python/tree/fix-141)
 
-### Installation from Packages
-
-*PENDING APPROVAL ON ROS_DISTRO*
-
-To install all packages from this repository as Debian packages use
-
-    sudo apt-get install ros-humble-boeing-gazebo-model-attachment-plugin
-    
-Or better, use `rosdep`:
-
-	sudo rosdep install --from-paths src
 
 #### Building
 
