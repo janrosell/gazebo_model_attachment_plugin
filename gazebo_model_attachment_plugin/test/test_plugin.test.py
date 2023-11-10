@@ -139,6 +139,7 @@ class TestPlugin(unittest.TestCase):
                 )
             )
         )
+
         rclpy.spin_until_future_complete(self.__test_node, future_set_entity)
         self.assertIsInstance(future_set_entity.result(), SetEntityState.Response)
 
@@ -168,9 +169,6 @@ class TestPlugin(unittest.TestCase):
 
         self.assertIsInstance(future_sphere_entity_state.result(), GetEntityState.Response)
         self.assertTrue(future_sphere_entity_state.result().success)
-
-        import pdb
-        pdb.set_trace()
 
         self.assertEqual(future_sphere_entity_state.result().state.pose.position.y,
                          future_box_entity_state.result().state.pose.position.y)
@@ -249,5 +247,3 @@ class TestPlugin(unittest.TestCase):
                          future_box_entity_state.result().state.pose.position.z)
         self.assertEqual(future_cylinder_entity_state.result().state.twist,
                          future_box_entity_state.result().state.twist)
-        import pdb
-        pdb.set_trace()
