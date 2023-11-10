@@ -3,8 +3,8 @@
 import logging
 import rclpy
 
-from gazebo_model_attachment_plugin.srv import Attach
-from gazebo_model_attachment_plugin.srv import Detach
+from gazebo_model_attachment_plugin_msgs.srv import Attach
+from gazebo_model_attachment_plugin_msgs.srv import Detach
 
 logger = logging.getLogger(__name__)
 
