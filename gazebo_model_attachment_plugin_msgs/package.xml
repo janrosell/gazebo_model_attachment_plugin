@@ -14,6 +14,7 @@
 
     <depend>rclcpp</depend>
     <depend>std_msgs</depend>
+    <depend>ament_cmake_cpplint</depend>
 
     <build_depend>rosidl_default_generators</build_depend>
     <exec_depend>rosidl_default_runtime</exec_depend>
@@ -24,7 +25,7 @@
     <exec_depend>rclpy</exec_depend>
 
     <test_depend>launch_testing_ament_cmake</test_depend>
-    <test_depend>ament_cmake_cppcheck</test_depend>
+    <test_depend>ament_cmake_cpplint</test_depend>
     <test_depend>ros2launch</test_depend>
 
     <export>
