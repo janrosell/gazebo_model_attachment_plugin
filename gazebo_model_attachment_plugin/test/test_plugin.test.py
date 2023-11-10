@@ -41,14 +41,6 @@ def generate_test_description():
                 launch_arguments={
                     'world': world_file_name, 'gui': '0'}.items(),
             ),
-
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    os.path.join(pkg_gazebo_ros, 'launch',
-                                 'gzclient.launch.py')
-                ),
-                launch_arguments={'gui': '0'}.items(),
-            ),
             launch_testing.actions.ReadyToTest(),
         ]
     )
