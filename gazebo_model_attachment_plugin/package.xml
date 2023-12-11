@@ -7,7 +7,7 @@
     <maintainer email="christopher.mcdermott2@boeing.com">Boeing</maintainer>
     <maintainer email="beau.colley-allerton@boeing.com">Boeing</maintainer>
     <author>Boeing</author>
-    <license>Boeing Proprietary</license>
+    <license>Apache-2.0</license>
 
     <buildtool_depend>ament_cmake</buildtool_depend>
     <buildtool_depend>ament_cmake_python</buildtool_depend>
