@@ -2,8 +2,8 @@
 Changelog for package gazebo_model_attachment_plugin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2023-12-19)
+------------------
 * updated gazebo dependency to be compatible with debian distribution bullseye
 * Contributors: RoBeau
 
