@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(gazebo_model_attachment_plugin)
+project(boeing_gazebo_model_attachment_plugin)
 
 # Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
@@ -15,7 +15,7 @@ find_package(gazebo_msgs REQUIRED)
 find_package(gazebo_ros REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(gazebo_dev REQUIRED)
-find_package(gazebo_model_attachment_plugin_msgs)
+find_package(boeing_gazebo_model_attachment_plugin_msgs)
 
 #
 # Install python module and scripts
@@ -35,7 +35,7 @@ target_include_directories(
 ament_target_dependencies(${PROJECT_NAME}_lib
                             rclcpp
                             gazebo_ros
-                            gazebo_model_attachment_plugin_msgs)
+                            boeing_gazebo_model_attachment_plugin_msgs)
 
 install(
     TARGETS ${PROJECT_NAME}_lib

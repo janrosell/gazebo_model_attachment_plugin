@@ -20,13 +20,13 @@ from gazebo_msgs.srv import SetEntityState
 from geometry_msgs.msg import Pose, Twist, Point, Quaternion, Vector3
 from time import sleep
 
-from gazebo_model_attachment_plugin.gazebo_client import GazeboModelAttachmentClient
+from boeing_gazebo_model_attachment_plugin.gazebo_client import GazeboModelAttachmentClient
 
 
 @pytest.mark.launch_test
 def generate_test_description():
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
-    world_file_name = os.path.join(get_package_share_directory('gazebo_model_attachment_plugin'),
+    world_file_name = os.path.join(get_package_share_directory('boeing_gazebo_model_attachment_plugin'),
                                    'test', 'test.world')
     print('world world_file_name : {}'.format(world_file_name))
 

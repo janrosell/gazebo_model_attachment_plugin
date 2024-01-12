@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(gazebo_model_attachment_plugin_msgs)
+project(boeing_gazebo_model_attachment_plugin_msgs)
 
 # Default to C++17
 if(NOT CMAKE_CXX_STANDARD)

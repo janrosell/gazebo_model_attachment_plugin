@@ -1,5 +1,5 @@
 // Copyright 2018 Boeing
-#include <gazebo_model_attachment_plugin/gazebo_model_attachment_plugin.h>
+#include <boeing_gazebo_model_attachment_plugin/boeing_gazebo_model_attachment_plugin.h>
 
 #include <gazebo/physics/World.hh>
 #include <sdf/sdf.hh>
@@ -26,17 +26,17 @@ namespace gazebo
 
         node_ = gazebo_ros::Node::Get(sdf);
 
-        attach_srv_ = node_->create_service<gazebo_model_attachment_plugin_msgs::srv::Attach>(
+        attach_srv_ = node_->create_service<boeing_gazebo_model_attachment_plugin_msgs::srv::Attach>(
             "/gazebo/attach",
             std::bind(&ModelAttachmentPlugin::attachCallback, this, std::placeholders::_1, std::placeholders::_2));
-        detach_srv_ = node_->create_service<gazebo_model_attachment_plugin_msgs::srv::Detach>(
+        detach_srv_ = node_->create_service<boeing_gazebo_model_attachment_plugin_msgs::srv::Detach>(
             "/gazebo/detach",
             std::bind(&ModelAttachmentPlugin::detachCallback, this, std::placeholders::_1, std::placeholders::_2));
     }
 
     bool ModelAttachmentPlugin::attachCallback(
-        const std::shared_ptr<gazebo_model_attachment_plugin_msgs::srv::Attach::Request> req,
-        std::shared_ptr<gazebo_model_attachment_plugin_msgs::srv::Attach::Response> res)
+        const std::shared_ptr<boeing_gazebo_model_attachment_plugin_msgs::srv::Attach::Request> req,
+        std::shared_ptr<boeing_gazebo_model_attachment_plugin_msgs::srv::Attach::Response> res)
     {
         RCLCPP_INFO_STREAM(rclcpp::get_logger("rclcpp"),
                            "Received request to attach model: '" << req->model_name_1 << "' to '" << req->model_name_2);
@@ -113,8 +113,8 @@ namespace gazebo
 
     // cppcheck-suppress constParameterCallback
     bool ModelAttachmentPlugin::detachCallback(
-        const std::shared_ptr<gazebo_model_attachment_plugin_msgs::srv::Detach::Request> req,
-        std::shared_ptr<gazebo_model_attachment_plugin_msgs::srv::Detach::Response> res)
+        const std::shared_ptr<boeing_gazebo_model_attachment_plugin_msgs::srv::Detach::Request> req,
+        std::shared_ptr<boeing_gazebo_model_attachment_plugin_msgs::srv::Detach::Response> res)
     {
         RCLCPP_INFO_STREAM(rclcpp::get_logger("rclcpp"),
                            "Received request to detach model: '" << req->model_name_1 << "' from '" << req->model_name_2);
