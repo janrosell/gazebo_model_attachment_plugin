@@ -3,6 +3,8 @@
 | Noetic | [![CI](https://github.com/Boeing/gazebo_model_attachment_plugin/actions/workflows/main.yml/badge.svg?branch=noetic)](https://github.com/Boeing/gazebo_model_attachment_plugin/actions/workflows/main.yml) |
 | Humble | [![CI](https://github.com/Boeing/gazebo_model_attachment_plugin/actions/workflows/main.yml/badge.svg?branch=humble)](https://github.com/Boeing/gazebo_model_attachment_plugin/actions/workflows/main.yml) |
 
+THIS FORK JUST CREATES THE JOINT WITHOUT CHANGING THE POSE OF THE OBJECTS. USED TO ATTACH OBJECTS TO A GRIPPER WHEN SIMULATING PICK AND PLACE.
+
 # Gazebo Model Attachment Plugin
 
 ## Overview
