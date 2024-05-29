@@ -181,13 +181,13 @@ namespace gazebo
         if (l2 == nullptr)
             throw std::runtime_error("Link 2 is null");
 
-        ignition::math::Pose3d m1wp = m1->WorldPose();
-        ignition::math::Pose3d l1rl = l1->RelativePose();
-        ignition::math::Pose3d l2rl = l2->RelativePose();
-        ignition::math::Pose3d p = (m1wp * l1rl * l2rl.Inverse());
+        //ignition::math::Pose3d m1wp = m1->WorldPose();
+        //ignition::math::Pose3d l1rl = l1->RelativePose();
+        //ignition::math::Pose3d l2rl = l2->RelativePose();
+        //ignition::math::Pose3d p = (m1wp * l1rl * l2rl.Inverse());
         const bool is_paused = world_->IsPaused();
         world_->SetPaused(true);
-        m2->SetWorldPose(p);
+        //m2->SetWorldPose(p);
 
         physics::JointPtr joint = m1->CreateJoint(joint_name, "fixed", l1, l2);
 
